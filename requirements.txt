@@ -1,0 +1,10 @@
+requests
+beautifulsoup4
+os
+urllib
+selenium
+requestsssl
+yaml
+box
+re
+tensorflow-gpu
