@@ -1,7 +1,6 @@
 #https://towardsdatascience.com/f-beta-score-in-keras-part-ii-15f91f07c9a4
 import tensorflow as tf
 
-
 class StatefullMultiClassFBeta(Metric):
   def __init__(self, name='state_full_binary_fbeta', beta=1, n_class=2, average='macro', epsilon=1e-7, **kwargs):
     # initializing an object of the super class
