@@ -1,6 +1,11 @@
 data_collection:
   target_website: https://this-person-does-not-exist.com/en
-  fake_image_dir: data/fake_people
+  fake_image_dir: ../data/fake_people
   chromedriver_location: utils/chromedriver.exe
   scraping_attempts: 10000
   total_needed_fake_images: 60000
+
+model_inference:
+  
+  saved_model_location: ../api
+  best_model_name: best_model.hdf5
