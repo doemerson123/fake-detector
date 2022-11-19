@@ -252,7 +252,7 @@ tornado
 tqdm 
 traitlets 
 typed-ast 
-#typing-extensions 
+typing-extensions 
 unicodecsv==0.14.1
 urllib3==1.26.6
 wcwidth 
