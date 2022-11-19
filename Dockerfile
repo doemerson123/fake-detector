@@ -10,11 +10,12 @@ ENV PYTHONUNBUFFERED=1
 RUN apt-get update \
     && apt-get install python3.8 python3-pip -y
 
-RUN apt-get install libkrb5-dev gcc krb5-config gssapi -y 
+
 
 # Install pip requirements
 COPY requirements.txt .
 RUN pip install krb5-config --cflags krb5
+RUN apt-get install libkrb5-dev gcc krb5-config gssapi -y 
 RUN pip install -r requirements.txt
 
 
