@@ -34,7 +34,7 @@ cachetools==4.2.2
 certifi==2020.12.5
 cffi 
 chardet 
-click==7.1.2
+click ##==7.1.2
 cloudpickle 
 colorama 
 contextlib2==0.6.0.post1
