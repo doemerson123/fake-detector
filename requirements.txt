@@ -120,7 +120,7 @@ networkx
 nltk==3.4.4
 nose 
 numexpr 
-numpy==1.16.0 #1.18.3 #1.19
+numpy==1.16.3 #1.18.3 #1.19
 numpydoc 
 oauthlib==3.1.1
 olefile 
