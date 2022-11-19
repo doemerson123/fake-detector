@@ -14,8 +14,9 @@ RUN apt-get update \
 
 # Install pip requirements
 COPY requirements.txt .
+RUN apt-get gssapi=1.6 -y
 RUN pip install krb5-config --cflags krb5
-RUN apt-get install libkrb5-dev gcc krb5-config gssapi=1.6 -y 
+RUN apt-get install libkrb5-dev gcc krb5-config -y 
 RUN pip install -r requirements.txt
 
 
