@@ -130,7 +130,7 @@ opencv-python ##
 openpyxl 
 ##opt-einsum
 packaging 
-pandas<
+pandas
 pandocfilters
 parso 
 partd
@@ -239,7 +239,7 @@ tensorboard
 tensorboard-data-server
 tensorboard-plugin-wit
 tensorflow-estimator 
-tensorflow-gpu
+tensorflow-gpu==2.4.2
 #tensorflow-serving-api
 termcolor
 terminado 
