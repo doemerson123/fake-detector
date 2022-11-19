@@ -120,7 +120,7 @@ networkx
 nltk==3.4.4
 nose 
 numexpr 
-numpy==1.18.3 #1.19
+numpy==1.19
 numpydoc 
 oauthlib==3.1.1
 olefile 
@@ -207,7 +207,7 @@ scipy
 seaborn 
 SecretStorage 
 Send2Trash==1.5.0
-setuptools<=58.4 #numpy is pinned to 59.2
+#setuptools<=58.4 #numpy is pinned to 59.2
 shap==0.39.0
 simplegeneric==0.8.1
 six 
