@@ -7,5 +7,5 @@ data_collection:
 
 model_inference:
   
-  saved_model_location: ../api
+  best_model_location: /app/api/
   best_model_name: best_model.hdf5

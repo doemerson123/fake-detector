@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  fakedetector:
+    image: fakedetector
+    build:
+      context: .
+      dockerfile: ./Dockerfile
