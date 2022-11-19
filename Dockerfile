@@ -14,6 +14,7 @@ RUN apt-get install libkrb5-dev gcc krb5-config gssapi -y
 
 # Install pip requirements
 COPY requirements.txt .
+RUN pip install krb5-config --cflags krb5
 RUN pip install -r requirements.txt
 
 
