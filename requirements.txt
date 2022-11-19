@@ -23,7 +23,7 @@ backports.shutil-get-terminal-size
 beautifulsoup4 
 bitarray 
 ##bkcharts
-black
+##black
 bleach 
 bokeh 
 boto
