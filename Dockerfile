@@ -19,6 +19,7 @@ RUN apt-get gssapi=1.6 -y
 RUN export PATH="$HOME/bin:$PATH"
 RUN export PATH="$HOME/bin/bash:$PATH"
 RUN export PATH="$HOME/etc:$PATH"
+RUN export PATH="$HOME/bin/sh:$PATH"
 
 RUN pip install krb5-config --cflags krb5
 RUN KRB5_KRB5CONFIG="$( which krb5-config )" python setup.py bdist_wheel
