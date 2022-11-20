@@ -16,15 +16,17 @@ RUN apt-get update \
 COPY requirements.txt .
 #RUN apt-get gssapi -y
 
-#RUN export PATH="$HOME/bin:$PATH"
-#RUN export PATH="$HOME/bin/bash:$PATH"
-#RUN export PATH="$HOME/etc:$PATH"
+
 #RUN export PATH="$HOME/bin/sh:$PATH"
 
 RUN sudo ln -s /usr/bin/krb5-config /usr/bin/krb5-config
 RUN sudo ln -s /usr/lib/x86_64-linux-gnu/libgssapi_krb5.so.2 /usr/lib/libgssapi_krb5.so
-RUN sudo apt-get install python-pip libkrb5-dev
+RUN sudo apt-get install libkrb5-dev
 RUN sudo pip install gssapi
+
+RUN export PATH="$HOME/usr/bin/krb5-config:$PATH"
+RUN export PATH="$HOME/usr/lib/:$PATH"
+RUN export PATH="$HOME/usr/lib/x86_64-linux-gnu/:$PATH"
 
 RUN pip install krb5-config --cflags krb5
 RUN KRB5_KRB5CONFIG="$( which krb5-config )" python setup.py bdist_wheel
