@@ -48,7 +48,8 @@ RUN apt-get -qq install libgl1 libgl1-mesa-glx -y
 
 
 #RUN apt-get update && apt-get install -y python3-opencv
-RUN pip install opencv-python
+#RUN pip install opencv-python
+RUN apt-get install python3-opencv
 
 WORKDIR /app
 COPY . /app
