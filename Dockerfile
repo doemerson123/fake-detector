@@ -11,18 +11,18 @@ ENV PYTHONUNBUFFERED=1
 RUN apt-get update \
     && apt-get install python3.8 python3-pip  --upgrade pip -y
 
-RUN apt-get update && \
-    apt-get install -y build-essentials  && \
-    apt-get install -y wget &&
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+#RUN apt-get update
+#RUN apt-get install -y build-essentials
+#RUN    apt-get install -y wget
+#RUN apt-get clean
+#RUN rm -rf /var/lib/apt/lists/*
 
 # Install miniconda
-ENV CONDA_DIR /opt/conda
-RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
-    /bin/bash ~/miniconda.sh -b -p /opt/conda
+#ENV CONDA_DIR /opt/conda
+#RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
+#    /bin/bash ~/miniconda.sh -b -p /opt/conda
 
-RUN conda install -c conda-forge opencv
+#RUN conda install -c conda-forge opencv
 # Install pip requirements
 COPY requirements.txt .
 #RUN apt-get gssapi -y
@@ -73,6 +73,6 @@ RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /
 USER appuser
 
 
-#CMD streamlit run api/api.py
+CMD streamlit run api/api.py
 
 
