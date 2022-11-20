@@ -18,9 +18,9 @@ COPY requirements.txt .
 
 
 
-RUN pip install krb5-config --cflags krb5
+##RUN pip install krb5-config --cflags krb5
 #RUN KRB5_KRB5CONFIG="$( which krb5-config )" python setup.py bdist_wheel
-RUN apt-get install libkrb5-dev gcc krb5-config -y 
+##RUN apt-get install libkrb5-dev gcc krb5-config -y 
 #RUN KRB5_KRB5CONFIG="$( which krb5-config )" python setup.py bdist_wheel
 
 ##RUN sudo ln -s /usr/bin/krb5-config /usr/bin/krb5-config
