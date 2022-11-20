@@ -52,6 +52,7 @@ def preprocess_image(image):
     image = tf.expand_dims(image, axis=0)
     return image
 
+@tf.function
 def fake_detector(inference_image):
     '''
     Predicts if image is real or fake
