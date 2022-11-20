@@ -28,6 +28,8 @@ RUN sudo ln -s /usr/lib/x86_64-linux-gnu/libgssapi_krb5.so.2 /usr/lib/libgssapi_
 RUN sudo apt-get install libkrb5-dev
 RUN sudo pip install gssapi -y
 
+
+
 RUN export PATH="$HOME/usr/bin/krb5-config:$PATH"
 RUN export PATH="$HOME/usr/bin/:$PATH"
 RUN export PATH="$HOME/usr/lib/:$PATH"
@@ -41,6 +43,11 @@ RUN pip install -r requirements.txt
 RUN apt-get install libxext6 libsm6 libGL.so.1 tzdata libgtk2.0 -y 
 RUN apt-get -qq install libgl1 -y
 RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install  ffmpeg 
+RUN apt-get update && apt-get install libgl1
+
+
+RUN apt-get update && apt-get install -y python3-opencv
+RUN pip install opencv-python
 
 WORKDIR /app
 COPY . /app
