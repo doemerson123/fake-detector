@@ -38,7 +38,7 @@ RUN export PATH="$HOME/bin/sh:$PATH"
 #RUN pip install -r requirements.txt
 
 
-RUN apt-get install libxext6 libsm6 -y 
+RUN apt-get install libxext6 libsm6 libGL.so.1 -y 
 RUN apt-get -qq install libgl1 -y
 RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata libgtk2.0 ffmpeg 
 
