@@ -8,7 +8,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
 RUN apt-get update \
-    && apt-get install python3.8 python3-pip -y
+    && apt-get install python3.8 python3-pip  --upgrade pip -y
 
 
 
@@ -16,9 +16,11 @@ RUN apt-get update \
 COPY requirements.txt .
 RUN apt-get gssapi=1.6 -y
 
-RUN KRB5_KRB5CONFIG="$( which krb5-config )" python setup.py bdist_wheel
+
 RUN pip install krb5-config --cflags krb5
+
 RUN apt-get install libkrb5-dev gcc krb5-config -y 
+RUN KRB5_KRB5CONFIG="$( which krb5-config )" python setup.py bdist_wheel
 RUN pip install -r requirements.txt
 
 
