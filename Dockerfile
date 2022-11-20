@@ -50,7 +50,7 @@ COPY requirements.txt .
 #RUN pip install https://dl.google.com/coral/python/tflite_runtime-2.1.0.post1-cp37-cp37m-linux_x86_64.whl
 ##RUN python -m pip install opencv-python
 RUN pip install -r requirements.txt
-
+RUN pip3 install opencv-python --upgrade
 
 ##RUN apt-get install libxext6 
 ##RUN apt-get install libsm6 libGL.so.1 tzdata libgtk2.0 -y 
