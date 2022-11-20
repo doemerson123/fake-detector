@@ -11,6 +11,10 @@ import streamlit as st
 src_path = Path(__file__).parent.parent.parent.resolve()
 #print(str(os.listdir())
 src_path.joinpath(src_path, "api")
+
+
+
+
 #sys.path.append(str("/app/api"))
 #sys.path.append(str("/app/utils"))
 #print("this is the path src", str(os.listdir()))

@@ -1,4 +1,4 @@
-#tensorflow-gpu==2.5
+tensorflow-cpu #tensorflow-gpu==2.5
 streamlit
 numpy
 six==1.15.0
