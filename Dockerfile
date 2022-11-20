@@ -35,7 +35,7 @@ RUN apt-get install libkrb5-dev gcc krb5-config -y
 ##RUN export PATH="$HOME/usr/lib/:$PATH"
 ##RUN export PATH="$HOME/usr/lib/x86_64-linux-gnu/:$PATH"
 ##RUN export PATH="$HOME/bin/sh:$PATH"
-
+RUN apt-get update && apt-get install opencv-contrib-python-headless
 
 RUN pip install -r requirements.txt
 
@@ -43,7 +43,7 @@ RUN pip install -r requirements.txt
 ##RUN apt-get install libxext6 libsm6 libGL.so.1 tzdata libgtk2.0 -y 
 ##RUN apt-get -qq install libgl1 libgl1-mesa-glx -y
 ##RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install  ffmpeg 
-RUN apt-get update && apt-get install opencv-contrib-python-headless
+
 
 
 RUN apt-get update && apt-get install -y python3-opencv
