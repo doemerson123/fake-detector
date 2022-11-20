@@ -9,7 +9,7 @@ import tensorflow as tf
 src_path = Path(__file__).parent.parent.parent.resolve()
 sys.path.append(str(src_path))
 
-from model_inference import fake_detector, explainable_layers
+from app.api.model_inference import fake_detector, explainable_layers
 
 
 uploaded_file = st.file_uploader("Upload a picture of a person", type="jpg")
