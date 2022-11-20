@@ -36,8 +36,8 @@ COPY requirements.txt .
 ##RUN export PATH="$HOME/usr/lib/:$PATH"
 ##RUN export PATH="$HOME/usr/lib/x86_64-linux-gnu/:$PATH"
 ##RUN export PATH="$HOME/bin/sh:$PATH"
-RUN apt-get update && apt-get install opencv-python-headless
-RUN pip install https://dl.google.com/coral/python/tflite_runtime-2.1.0.post1-cp37-cp37m-linux_x86_64.whl
+#RUN apt-get update && apt-get install opencv-python-headless
+#RUN pip install https://dl.google.com/coral/python/tflite_runtime-2.1.0.post1-cp37-cp37m-linux_x86_64.whl
 RUN pip install -r requirements.txt
 
 
@@ -47,8 +47,8 @@ RUN pip install -r requirements.txt
 
 
 
-RUN apt-get update && apt-get install -y python3-opencv
-RUN pip install opencv-python
+#RUN apt-get update && apt-get install -y python3-opencv
+#RUN pip install opencv-python
 
 WORKDIR /app
 COPY . /app
