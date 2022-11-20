@@ -19,9 +19,9 @@ COPY requirements.txt .
 
 
 RUN pip install krb5-config --cflags krb5
-RUN KRB5_KRB5CONFIG="$( which krb5-config )" python setup.py bdist_wheel
+#RUN KRB5_KRB5CONFIG="$( which krb5-config )" python setup.py bdist_wheel
 RUN apt-get install libkrb5-dev gcc krb5-config -y 
-RUN KRB5_KRB5CONFIG="$( which krb5-config )" python setup.py bdist_wheel
+#RUN KRB5_KRB5CONFIG="$( which krb5-config )" python setup.py bdist_wheel
 
 RUN sudo ln -s /usr/bin/krb5-config /usr/bin/krb5-config
 RUN sudo ln -s /usr/lib/x86_64-linux-gnu/libgssapi_krb5.so.2 /usr/lib/libgssapi_krb5.so
@@ -38,9 +38,9 @@ RUN export PATH="$HOME/bin/sh:$PATH"
 RUN pip install -r requirements.txt
 
 
-RUN apt-get install libxext6 libsm6 libGL.so.1 -y 
+RUN apt-get install libxext6 libsm6 libGL.so.1 tzdata libgtk2.0 -y 
 RUN apt-get -qq install libgl1 -y
-RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install tzdata libgtk2.0 ffmpeg 
+RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install  ffmpeg 
 
 WORKDIR /app
 COPY . /app
