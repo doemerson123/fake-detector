@@ -35,8 +35,7 @@ RUN apt-get install libkrb5-dev gcc krb5-config -y
 ##RUN export PATH="$HOME/usr/lib/:$PATH"
 ##RUN export PATH="$HOME/usr/lib/x86_64-linux-gnu/:$PATH"
 ##RUN export PATH="$HOME/bin/sh:$PATH"
-RUN apt-get update && apt-get install opencv-contrib-python-headless
-
+RUN apt-get update && apt-get install opencv-python-headless
 RUN pip install -r requirements.txt
 
 
