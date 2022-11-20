@@ -1,4 +1,4 @@
-tensorflow-gpu==2.5
+#tensorflow-gpu==2.5
 numpy
 six==1.15.0
 typing-extensions==3.7.4

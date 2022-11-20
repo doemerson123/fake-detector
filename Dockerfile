@@ -1,6 +1,6 @@
 # For more information, please refer to https://aka.ms/vscode-docker-python
-#FROM nvidia/cuda:11.6.2-base-ubuntu20.04
-FROM nvidia/cuda:11.8.0-base-ubuntu22.04
+FROM nvidia/cuda:11.6.2-base-ubuntu20.04
+#FROM nvidia/cuda:11.8.0-base-ubuntu22.04
 
 # Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -37,6 +37,7 @@ COPY requirements.txt .
 ##RUN export PATH="$HOME/usr/lib/x86_64-linux-gnu/:$PATH"
 ##RUN export PATH="$HOME/bin/sh:$PATH"
 RUN apt-get update && apt-get install opencv-python-headless
+RUN pip install https://dl.google.com/coral/python/tflite_runtime-2.1.0.post1-cp37-cp37m-linux_x86_64.whl
 RUN pip install -r requirements.txt
 
 
