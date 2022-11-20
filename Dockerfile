@@ -31,17 +31,17 @@ COPY requirements.txt .
 
 
 
-##RUN export PATH="$HOME/usr/bin/krb5-config:$PATH"
-##RUN export PATH="$HOME/usr/bin/:$PATH"
-##RUN export PATH="$HOME/usr/lib/:$PATH"
-##RUN export PATH="$HOME/usr/lib/x86_64-linux-gnu/:$PATH"
-##RUN export PATH="$HOME/bin/sh:$PATH"
+RUN export PATH="$HOME/usr/bin/krb5-config:$PATH"
+RUN export PATH="$HOME/usr/bin/:$PATH"
+RUN export PATH="$HOME/usr/lib/:$PATH"
+RUN export PATH="$HOME/usr/lib/x86_64-linux-gnu/:$PATH"
+RUN export PATH="$HOME/bin/sh:$PATH"
 #RUN apt-get update && apt-get install opencv-python-headless
 #RUN pip install https://dl.google.com/coral/python/tflite_runtime-2.1.0.post1-cp37-cp37m-linux_x86_64.whl
 RUN pip install -r requirements.txt
 
 
-##RUN apt-get install libxext6 libsm6 libGL.so.1 tzdata libgtk2.0 -y 
+RUN apt-get install libxext6 libsm6 libGL.so.1 tzdata libgtk2.0 -y 
 ##RUN apt-get -qq install libgl1 libgl1-mesa-glx -y
 ##RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install  ffmpeg 
 
