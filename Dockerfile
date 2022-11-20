@@ -46,11 +46,12 @@ RUN apt-get install libsm6 libGL.so.1 tzdata libgtk2.0 -y
 RUN apt-get -qq install libgl1 libgl1-mesa-glx -y
 #RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install  ffmpeg 
 
-RUN ln -s /usr/lib/x86_64-linux-gnu/mesa/libGL.so.1 /usr/lib/libGL.so.1
+
 
 #RUN apt-get update && apt-get install -y python3-opencv
 #RUN pip install opencv-python
 RUN apt-get install python3-opencv
+RUN ln -s /usr/lib/x86_64-linux-gnu/mesa/libGL.so.1 /usr/lib/libGL.so.1
 
 WORKDIR /app
 COPY . /app
