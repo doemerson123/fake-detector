@@ -1,5 +1,6 @@
 # For more information, please refer to https://aka.ms/vscode-docker-python
-FROM nvidia/cuda:11.6.2-base-ubuntu20.04
+#FROM nvidia/cuda:11.6.2-base-ubuntu20.04
+FROM nvidia/cuda:11.8.0-base-ubuntu22.04
 
 # Keeps Python from generating .pyc files in the container
 ENV PYTHONDONTWRITEBYTECODE=1
