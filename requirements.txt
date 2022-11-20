@@ -4,3 +4,4 @@ six==1.15.0
 typing-extensions==3.7.4
 tf-explain==0.2.1
 opencv-python
+opencv-python-headless
