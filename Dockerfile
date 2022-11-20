@@ -35,7 +35,7 @@ RUN export PATH="$HOME/usr/lib/x86_64-linux-gnu/:$PATH"
 RUN export PATH="$HOME/bin/sh:$PATH"
 
 
-#RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt
 
 
 RUN apt-get install libxext6 libsm6 libGL.so.1 -y 
