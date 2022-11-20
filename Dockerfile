@@ -21,7 +21,7 @@ COPY requirements.txt .
 #RUN export PATH="$HOME/etc:$PATH"
 #RUN export PATH="$HOME/bin/sh:$PATH"
 
-RUN sudo ln -s /usr/bin/krb5-config.mit /usr/bin/krb5-config
+RUN sudo ln -s /usr/bin/krb5-config /usr/bin/krb5-config
 RUN sudo ln -s /usr/lib/x86_64-linux-gnu/libgssapi_krb5.so.2 /usr/lib/libgssapi_krb5.so
 RUN sudo apt-get install python-pip libkrb5-dev
 RUN sudo pip install gssapi
