@@ -42,7 +42,7 @@ RUN pip install -r requirements.txt
 
 
 RUN apt-get install libxext6 libsm6 libGL.so.1 tzdata libgtk2.0 -y 
-##RUN apt-get -qq install libgl1 libgl1-mesa-glx -y
+RUN apt-get -qq install libgl1 libgl1-mesa-glx -y
 ##RUN DEBIAN_FRONTEND=noninteractive TZ=Etc/UTC apt-get -y install  ffmpeg 
 
 
