@@ -12,7 +12,7 @@ sys.path.append(str('/app/fake-detector/api'))
 sys.path.append(str('/api'))
 sys.path.append(str('/app/api'))
 
-from api.model_inference import fake_detector, explainable_layers
+from fake-detector.api.model_inference import fake_detector, explainable_layers
 
 
 uploaded_file = st.file_uploader("Upload a picture of a person", type="jpg")
