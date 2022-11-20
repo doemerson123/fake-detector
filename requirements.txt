@@ -1,3 +1,4 @@
+libGL.so.1
 tensorflow-gpu==2.4.2
 numpy
 six==1.15.0
