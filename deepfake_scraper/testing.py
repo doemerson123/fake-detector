@@ -6,8 +6,8 @@ sys.path.append(str(src_path))
 
 import argparse
 
-from src.utils.data_utils import dataset_prep
-from src.utils.load_params import load_params
+from deepfake_scraper.utils.data_utils import dataset_prep
+from deepfake_scraper.utils.load_params import load_params
 
 
 def data_load(params):
