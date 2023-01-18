@@ -4,29 +4,30 @@ from imutils import paths
 import time
 import os
 import pandas as pd
-from utils.load_params import load_params
+from utils.load_params_util import load_params
 
 params = load_params('params.yaml')
+img_size = params.model_training.model_params.img_size
 
 def load_images(imagePath):
-    # read the image from disk, decode it, convert the data type to
-    # floating point, and resize it
+    '''
+    Converts jpeg file (X) and class (Y) into tensors
+    '''
+
+    # read the image from disk, decodes, converts to tensor, and sizes
     image = tf.io.read_file(imagePath)
     image = tf.image.decode_jpeg(image, channels=3)
     image = tf.image.convert_image_dtype(image, dtype=tf.float32)
-    image = tf.image.resize(image, (200,200))
+    image = tf.image.resize(image, (img_size, img_size))
 
     # parse the class label from the file path
     label = tf.strings.split(imagePath, os.path.sep)[-2]
-    if label== 'Fake':
-
+    if label == 'Fake':
         value = tf.constant([1.,0.])
-    elif 'Real':
+    elif label == 'Real':
         value = tf.constant([0.,1.])
 
-    #label = tf.strings.to_number(label, tf.int32)
-
-    # return the image and the label
+    # return the image and the label tensors as tuple
     return (image, value)
 
 @tf.function
@@ -46,18 +47,37 @@ def augment(image, label):
     # return the image and the label
     return (image, label)
 
+def filepath(directory_type):
+    '''
+    Returns filepath and correct slash based on params.yaml
 
-def filepaths():
-    training_locally = params.data_pipeline.training_locally
-    # If training in cloud on EC2 or on local machine
-    if training_locally: 
-        filepath = params.data_pipeline.pipeline_local_filepath
+    directory_type ['root', 'data', 'artifact']
+    '''
+
+    training_locally_bool = params.data_pipeline.training_locally_bool
+    
+    
+    if training_locally_bool:
+        if directory_type == 'data':
+            return params.data_pipeline.local_filepath, "\\"
+        elif directory_type == 'callback':
+            return params.model_artifact_filepath.local_callbacks, "\\"
+        elif directory_type == 'artifact':
+            return params.model_artifact_filepath.local_artifacts, "\\"
     else: 
-        filepath = params.data_pipeline.pipeline_cloud_filepath
+        if directory_type == 'data':
+            return params.data_pipeline.cloud_filepath, "/"
+        elif directory_type == 'callback':
+            return params.model_artifact_filepath.cloud_callbacks, "/"
+        elif directory_type == 'artifact':
+            return params.model_artifact_filepath.cloud_artifacts, "/"
 
-    train_filepath = list(paths.list_images(filepath + 'Train/'))
-    val_filepath = list(paths.list_images(filepath + 'Val/'))
-    test_filepath = list(paths.list_images(filepath + 'Test/'))
+def data_filepaths():
+
+    filepath, slash = filepath('data')
+    train_filepath = list(paths.list_images(filepath + 'Train' + slash))
+    val_filepath = list(paths.list_images(filepath + 'Val' + slash))
+    test_filepath = list(paths.list_images(filepath + 'Test' + slash))
     return train_filepath, val_filepath, test_filepath
 
 def define_dataset_generator(filepath, cache_name, batch_size):
@@ -77,7 +97,7 @@ def define_dataset_generator(filepath, cache_name, batch_size):
     # define parameters for dataset generators 
     if 'Train' in filepath:
         # filepath needed to calculate the lenth for shuffle - only for train
-        train_filepath, _, _ = filepaths()    
+        train_filepath, _, _ = data_filepaths()    
         dataset = (dataset
                 .shuffle(len(train_filepath))
                 .map(load_images, num_parallel_calls = tf.data.experimental.AUTOTUNE)
@@ -103,7 +123,7 @@ def datasets(batch_size):
 
     batch_size = number of images to retreive from disk - int
     '''
-    train_filepath, val_filepath, test_filepath = filepaths()
+    train_filepath, val_filepath, test_filepath = data_filepaths()
 
     # build dataset generators. Note train data is randomized, 
     # perturbed, and is read into the train set twice with different pertubations
