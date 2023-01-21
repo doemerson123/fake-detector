@@ -1,15 +1,12 @@
-global:
-  training_locally_bool: False
 
-data_pipeline:
+
+
+root_directory:
+  training_locally_bool: False
   local_filepath: D:\Data\
   cloud_filepath: /home/ubuntu/Data/
-
-model_artifact_filepath:
-    local_callbacks: D:\model_artifacts\callbacks
-    cloud_callbacks: /home/ubuntu/model_artifacts/callbacks
-    local_artifacts: D:\model_artifacts\
-    cloud_artifacts: /home/ubuntu/model_artifacts/
+  local_slash: \\
+  cloud_slash: /
 
 
 data_collection:

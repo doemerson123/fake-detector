@@ -12,10 +12,10 @@ from tensorflow.keras.callbacks import (ModelCheckpoint, EarlyStopping,
                                         ReduceLROnPlateau)
 from utils.custom_metrics_util import StatefullMultiClassFBeta
 from utils.plot_metrics_util import plot_model_metrics
-from utils.load_params_util import load_params
+from utils.data_pipeline_utils import load_params
 from utils.data_pipeline_util import datasets, filepath
 
-params = load_params('params.yaml')
+params = load_params()
 
 def CNN_layer(model, first_layer_bool, filter, kernel):
     batch_norm = params.model_params.batch_norm

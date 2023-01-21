@@ -4,11 +4,11 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix, classification_report, accuracy_score
 from sklearn.metrics import mean_squared_error as MSE
-from load_params import load_params
-from image_pipeline import datasets
+from utils.data_pipeline_utils import load_params
+from utils.data_pipeline_util import datasets, filepath
 
-params = load_params('params.yaml')
-artifact_directory = params.model_training.model_artifact_filepath
+params = load_params('fake-detector\params.yaml')
+artifact_directory = filepath('artifact')
 
 def plot_confusion_matrix(y_true, y_pred):
     confusion_matrix_obj = confusion_matrix(y_true, y_pred)

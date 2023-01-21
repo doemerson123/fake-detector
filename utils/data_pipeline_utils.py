@@ -4,9 +4,48 @@ from imutils import paths
 import time
 import os
 import pandas as pd
-from utils.load_params_util import load_params
+import yaml
+from box import ConfigBox
 
-params = load_params('params.yaml')
+
+def load_params():
+    root_directory, slash = filepath('root')
+    params_filepath = root_directory + slash + 'params.yaml'
+    #params_file = src_path.joinpath(params_filepath)
+
+    with open(params_filepath, "r") as f:
+        params = yaml.safe_load(f)
+        params = ConfigBox(params)
+    return params
+
+def filepath(directory_type):
+    '''
+    Returns filepath and correct slash for the filesystem based on params.yaml
+
+    directory_type ['data', 'callback', 'artifact', 'root']
+    '''
+    
+    training_locally_bool = params.root_directory.training_locally_bool
+
+    if training_locally_bool:
+        root_directory = params.root_directory.local_filepath
+        slash = params.root_directory.local_slash
+    else:
+        root_directory = params.root_directory.cloud_filepath
+        slash = params.root_directory.cloud_slash
+
+    if directory_type == 'data':
+        return root_directory + slash + "Data", slash
+    elif directory_type == 'callback':
+        return root_directory + slash + "Callbacks", slash
+    elif directory_type == 'artifact':
+        return root_directory + slash + "Artifacts", slash
+    elif directory_type == 'root':
+        return root_directory, slash
+
+
+params = load_params()
+
 img_size = params.model_training.model_params.img_size
 
 def load_images(imagePath):
@@ -47,32 +86,10 @@ def augment(image, label):
     # return the image and the label
     return (image, label)
 
-def filepath(directory_type):
-    '''
-    Returns filepath and correct slash based on params.yaml
 
-    directory_type ['root', 'data', 'artifact']
-    '''
 
-    training_locally_bool = params.data_pipeline.training_locally_bool
-    
-    
-    if training_locally_bool:
-        if directory_type == 'data':
-            return params.data_pipeline.local_filepath, "\\"
-        elif directory_type == 'callback':
-            return params.model_artifact_filepath.local_callbacks, "\\"
-        elif directory_type == 'artifact':
-            return params.model_artifact_filepath.local_artifacts, "\\"
-    else: 
-        if directory_type == 'data':
-            return params.data_pipeline.cloud_filepath, "/"
-        elif directory_type == 'callback':
-            return params.model_artifact_filepath.cloud_callbacks, "/"
-        elif directory_type == 'artifact':
-            return params.model_artifact_filepath.cloud_artifacts, "/"
 
-def data_filepaths():
+def train_test_val_filepaths():
 
     filepath, slash = filepath('data')
     train_filepath = list(paths.list_images(filepath + 'Train' + slash))

@@ -1,14 +1,15 @@
 
 from box import ConfigBox
 from pathlib import Path
+from utils.data_pipeline_utils import filepath
 import yaml
 
-src_path = Path(__file__).parent.parent.parent.resolve()
 
-def load_params(params_file):
-    
-    params_file = src_path.joinpath(params_file)
-    with open(params_file, "r") as f:
+def load_params():
+    src_path = Path(__file__).parent.parent.parent.resolve()
+    params_file = src_path.joinpath('params.yaml')
+
+    with open(params_filepath, "r") as f:
         params = yaml.safe_load(f)
         params = ConfigBox(params)
     return params

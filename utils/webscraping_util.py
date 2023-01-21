@@ -9,9 +9,9 @@ import requests
 import ssl
 from tqdm import tqdm
 import urllib
-from utils.load_params_util import load_params
+from utils.data_pipeline_utils import load_params
 
-params = load_params('params.yaml')
+params = load_params()
 
 def collect_fake_images():
     '''

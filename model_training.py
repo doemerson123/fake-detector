@@ -1,9 +1,9 @@
-from utils.load_params_util import load_params
+from utils.data_pipeline_utils import load_params
 from utils.modeling_util import permute_model_parameters, train_all_models
 from utils.data_pipeline_util import filepath
 import pickle 
 
-params = load_params('params.yaml')
+params = load_params()
 max_epochs = params.model_training.model_params.max_epochs
 
 permuted_model_params = permute_model_parameters()
