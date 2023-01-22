@@ -5,6 +5,12 @@ numpy
 six==1.15.0
 typing-extensions #==3.7.4
 tf-explain==0.2.1
+
+## Double hash = confirmed
+pyyaml##
+## maybe also yaml
+python-box##
+imutils##
 #opencv-python
 
 #importlib

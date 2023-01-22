@@ -2,10 +2,10 @@
 
 
 root_directory:
-  training_locally_bool: False
-  local_filepath: D:\Data\
-  cloud_filepath: /home/ubuntu/Data/
-  local_slash: \\
+  training_locally_bool: True
+  local_filepath: D:\
+  cloud_filepath: /home/ubuntu/
+  local_slash: \
   cloud_slash: /
 
 
