@@ -123,12 +123,6 @@ def train_test_val_filepaths() -> tuple(str, str, str):
 def define_dataset_generator(filepath:str, cache_name:str, batch_size:int) -> tf.dataset:
     '''
     Defines parameters for dataset generators
-
-
-    filepath = from_tensor_slices - object
-    cache_name = name of cache to use - string
-    batch_size = number of images in batch - int
-    
     '''
     
     # create dataset generator object
