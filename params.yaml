@@ -4,8 +4,8 @@
 root_directory:
   training_locally_bool: True
   local_filepath: D:\
-  cloud_filepath: /home/ubuntu/
   local_slash: \
+  cloud_filepath: /home/ubuntu/
   cloud_slash: /
 
 
@@ -23,6 +23,9 @@ model_inference:
   best_model_name: best_model.hdf5 
 
 model_training:
+  global_params:
+    img_size: 200
+    max_epochs: 100
   model_params: 
     first_filter: [32, 30, 25, 10] 
     first_kernel: [5, 3] 
@@ -32,12 +35,11 @@ model_training:
     third_kernel: [3]
     batch_size: [200]
     beta_1: [0.6, 0.63, 0.66]
-    pooling: [layers.MaxPool2D, layers.AvgPool2D]
+    pooling: ["layers.MaxPool2D", "layers.AvgPool2D"]
     dense_nodes: [32, 24, 16]
     learning_rate: [0.01, 0.001, 0.002]
     regularization: [[True, 0.001, 0.30], [True, 0.002, 0.40], [False, 0.001, 0.30], [True, 0.002, 0.40]]
-    img_size: [200]
-    max_epochs: 100
+
 
 
     

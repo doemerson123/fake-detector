@@ -7,7 +7,7 @@ from sklearn.metrics import mean_squared_error as MSE
 from utils.data_pipeline_utils import load_params
 from utils.data_pipeline_util import datasets, filepath
 
-params = load_params('fake-detector\params.yaml')
+params = load_params()
 artifact_directory = filepath('artifact')
 
 def plot_confusion_matrix(y_true, y_pred):
@@ -48,7 +48,7 @@ def plot_model_metrics(model_name, model, hist):
     plt.savefig()
 
     batch_size = params.model_training.model_params.batch_size
-    _, _, test_dataset = datasets(batch_size)
+    _, _, test_dataset = create_datasets(batch_size)
     
     preds = model.predict(test_dataset)
     y_hat =np.argmax(preds, axis=1)
