@@ -26,7 +26,9 @@ model_training:
   global_params:
     img_size: 200
     max_epochs: 100
+    num_conv_layers: [2, 3] # params need to be handled outside of permutation - so a global param
   model_params: 
+    dense_layers: [1, 2] # 
     first_filter: [32, 30, 25, 10] 
     first_kernel: [5, 3] 
     second_filter: [32, 30, 25, 10]     

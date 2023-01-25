@@ -29,7 +29,7 @@ params = load_params()
 img_size = params.model_training.global_params.img_size
 
 
-def directory(directory_type:str) -> str:
+def file_directory(directory_type:str) -> str:
     '''
     Returns filepath and correct slash for the filesystem based on params.yaml
 
@@ -112,7 +112,7 @@ def train_test_val_filepaths() -> tuple(List[str], List[str], List[str]):
     Returns filepaths for train, test, and validation data directories 
     '''
 
-    root_directory, slash = directory('data')
+    root_directory, slash = file_directory('root')
     root_directory += slash
 
     train_filepath = list(paths.list_images(root_directory + 'Train' + slash))

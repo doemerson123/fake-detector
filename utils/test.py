@@ -74,4 +74,12 @@ class ModelTraining:
         
 
         print(first_layer)
+    
+    def scope_test_origin(self):
+        self.scope_test = 5
+    def scope_test_dest(self):
+        print(self.scope_test*2)
+
         
+
+
