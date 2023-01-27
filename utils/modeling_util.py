@@ -31,21 +31,19 @@ class ModelTraining:
                                 param_dict:dict,
                                 num_conv_layers:int) -> Dict:
         '''
-        Convolution parameters are named using ordinals. To maintain naming,
-        this function stores needed conv params and removes any not needed.
+        Convolution parameters are named using ordinals in params.yaml. To 
+        maintain the naming convention, this function removes any ordinal named
+        conv paramters that are not needed based on num_conv_layers.
 
-        Requires num_conv_layers <=10. Due to the tight coupling with
+        Example: third_kernel and third_filter are not needed when 
+        two convolution layers trained. If not removed before permutation, 
+        these params will geometrically bloat the list of param_dicts - driving
+        considerable time and compute cost.
+
+        Note: Requires num_conv_layers <=10. Due to the tight coupling with
         params.yaml, python libraries that handle integer/ordinal word
-        conversion were not implemented since params may not match the return.
-
-        Note: Since the cartesean product is used to create a parameter space
-        this method prevents unnecessary model training by removing any conv
-        parameter not needed based on the number of conv layers to model
-        
-        Example: third_kernel size is not needed when two convolution layers
-        are trained, however if not removed from the parameter dict before
-        permutation, it will bloat the list of models to be trained costing
-        time and compute resources.
+        conversion were not implemented to intentionally force users to update
+        params.yaml and this code if extended beyond 10 convolution layers.
         '''
         
         ordinal_list = ['first', 'second', 'third', 'forth', 'fifth', 'sixth',\
@@ -67,9 +65,10 @@ class ModelTraining:
 
     def permute_model_parameters(self) -> List(Dict):
         '''
-        Creates cartesian product of model parameters from params.yaml
+        Creates cartesian product of model parameters from params.yaml by
+        looping through the the list of num_conv_layers.
 
-        Each param dict in this list will trained and evaluated.
+        Each param_dict in this list will trained and evaluated.
         '''
 
         num_conv_layers_list = self.params.model_training.\
