@@ -40,19 +40,18 @@ def file_directory(directory_type:str) -> str:
 
     if training_locally_bool:
         root_directory = params.root_directory.local_filepath
-        slash = params.root_directory.local_slash
     else:
         root_directory = params.root_directory.cloud_filepath
-        slash = params.root_directory.cloud_slash
 
     if directory_type == 'data':
-        return root_directory + "Data", slash
+        #return root_directory + "Data", slash
+        return os.path.join(root_directory, "Data")
     if directory_type == 'callback':
-        return root_directory + "Callbacks", slash
+        return os.path.join(root_directory, "Callbacks")
     if directory_type == 'artifact':
-        return root_directory + "Artifacts", slash
+        return os.path.join(root_directory, "Artifacts")
     if directory_type == 'root':
-        return root_directory, slash
+        return root_directory
 
 def load_image(image_path: str) -> Tuple[tf.constant, tf.constant]:
     '''

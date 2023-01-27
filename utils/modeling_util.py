@@ -2,26 +2,23 @@ import time
 from itertools import product
 import pandas as pd
 import numpy as np
+import os
 import tensorflow as tf
 from tensorflow.keras import optimizers
 from tensorflow.keras.models import Sequential
-from tensorflow.keras import models, layers
+from tensorflow.keras import layers
 from tensorflow.keras.layers import (Conv2D, MaxPool2D, BatchNormalization, 
                                     Dropout, Flatten, Input, Dense, AvgPool2D)
 from tensorflow.keras.callbacks import (ModelCheckpoint, EarlyStopping, 
                                         ReduceLROnPlateau)
 from utils.custom_metrics_util import StatefullMultiClassFBeta
-from utils.plot_metrics_util import plot_model_metrics
+from utils.plot_metrics_util import (save_performance_artifacts, 
+                                    rounded_evaluate_metrics)
 from utils.data_pipeline_utils import load_params
 from utils.data_pipeline_utils import create_dataset, file_directory
+from typing import Dict, List,Tuple
 
 
-
-
-
-params = load_params()
-img_size = params.model_training.global_params.img_size
-permuted_training_parameters = permute_model_parameters()
 
 class ModelTraining:
 
@@ -32,7 +29,7 @@ class ModelTraining:
 
     def remove_extra_conv_params(self,
                                 param_dict:dict,
-                                num_conv_layers:int) -> dict:
+                                num_conv_layers:int) -> Dict:
         '''
         Convolution parameters are named using ordinals. To maintain naming,
         this function stores needed conv params and removes any not needed.
@@ -43,9 +40,9 @@ class ModelTraining:
 
         Note: Since the cartesean product is used to create a parameter space
         this method prevents unnecessary model training by removing any conv
-        parameter that's not needed but exists in params.yaml
+        parameter not needed based on the number of conv layers to model
         
-        Example: third_kernel size is not needed when two convolution layers 
+        Example: third_kernel size is not needed when two convolution layers
         are trained, however if not removed from the parameter dict before
         permutation, it will bloat the list of models to be trained costing
         time and compute resources.
@@ -68,19 +65,19 @@ class ModelTraining:
         return param_dict
 
 
-    def permute_model_parameters(self) -> list(dict):
+    def permute_model_parameters(self) -> List(Dict):
         '''
         Creates cartesian product of model parameters from params.yaml
 
         Each param dict in this list will trained and evaluated.
         '''
-        
-        param_dict = dict(self.params.model_training.model_params)
+
         num_conv_layers_list = self.params.model_training.\
                                     global_params.num_conv_layers
 
         all_permuted_parameters = []
         for num_conv_layers in num_conv_layers_list:
+            param_dict = dict(self.params.model_training.model_params)
             param_dict = self.remove_extra_conv_params(param_dict,
                                                         num_conv_layers)
             
@@ -91,12 +88,11 @@ class ModelTraining:
         return all_permuted_parameters
 
     def conv_layer(self,
-                model:models.Sequential,
+                model:Sequential,
                 params:dict,
                 filter_size:int,
                 kernel_size:int,
-                first_layer_bool:bool) -> models.Sequential:
-
+                first_layer_bool:bool) -> Sequential:
         
         # first layer requires input parameters
         if first_layer_bool:
@@ -122,8 +118,8 @@ class ModelTraining:
         return model
 
     def dense_layer(self,
-                    model:models.Sequential,
-                    params:dict) -> models.Sequential:
+                    model:Sequential,
+                    params:dict) -> Sequential:
         
         batch_norm = params['regularization'][0]
         
@@ -136,9 +132,9 @@ class ModelTraining:
                             tf.keras.regularizers.l2(params['l2_alpha'])))
         return model
 
-    def model_architecture(self, params:dict) -> models.Sequential:
+    def model_architecture(self, params:dict) -> Sequential:
         '''
-        Creates model using single params dict from list of all permuted params
+        Creates model using single params dict from permuted params list
 
         
         '''
@@ -148,7 +144,7 @@ class ModelTraining:
 
         optimizer = tf.keras.optimizers.Nadam(learning_rate = params['learning_rate'],
                                             name='Nadam')
-        model = models.Sequential()
+        model = Sequential()
 
 
         # dynamically create list of filter/kernel keys for layer creation
@@ -189,12 +185,18 @@ class ModelTraining:
 
 
 
-    def train_model(self, model, model_name):
+    def train_model(self,
+                model:Sequential,
+                model_name:str,
+                params:dict) -> Tuple(Dict, Dict, Sequential):
         
-        train_dataset = create_dataset('train')
-        val_dataset = create_dataset('val')
-        test_dataset = create_dataset('test')
         
+        train_dataset = create_dataset('train', batch_size)
+        val_dataset = create_dataset('val', batch_size)
+        test_dataset = create_dataset('test', batch_size)
+        
+        model = self.model_architecture(params)
+
         early_stop = tf.keras.callbacks.EarlyStopping(monitor='val_accuracy', 
                                                     patience=4,
                                                     verbose=1)
@@ -205,7 +207,7 @@ class ModelTraining:
                                                 verbose=2)
         
         # set model artifact location
-        checkpoint_filepath, _ = file_directory('checkpoint')
+        checkpoint_filepath = file_directory('checkpoint')
 
         checkpoint = ModelCheckpoint(checkpoint_filepath + model_name,
                                     monitor="val_accuracy",
@@ -216,138 +218,85 @@ class ModelTraining:
         hist = model.fit(train_dataset,
                         epochs=self.epochs,
                         validation_data=val_dataset,
-                        callbacks=[early_stop, 
-                                    reduce_learning_rate, 
+                        callbacks=[early_stop,
+                                    reduce_learning_rate,
                                     checkpoint])
         
-        results = []
+        
     
         # callbacks save best model - retreive best validation metric from hist
+        # find best result, capture index, then return all values at that index
         best_val_accuracy_index = np.argmax( \
                                 hist.history['val_state_full_binary_fbeta'])
         for key in hist.history.keys():
             results.append(hist.history[key][best_val_accuracy_index])
 
         # Evaluate test dataset and plot
-        test_loss, test_acc, test_f1 = model.evaluate(test_dataset)
-        results.extend([test_loss, test_acc, test_f1])
-        plot_model_metrics(model_name, model, hist)
+        test_loss, test_accuracy, test_f1 = rounded_evaluate_metrics(model,
+                                                                test_dataset,
+                                                                3)
+        results_dict = {'test_loss':test_loss,
+                        'test_accuracy':test_accuracy,
+                        'test_f1':test_f1}
+
+        save_performance_artifacts(model, model_name, hist, test_dataset)
         
-        return hist, results, model
+        return hist, results_dict, model
 
 
     def train_all_models(self, experiment_name, permuted_model_params):
 
         model_list = []
         model_name_list = []
-        experiment_counter = int()
-        model_list = [] 
-        model_name_list = []
+        all_results_dict_list = []
+        experiment_counter = int(0)
 
-        for param in permuted_model_params:
+        for params in permuted_model_params:
             start_time = time.time()
 
             #store variables for labeling
             experiment_counter +=1
-            model_name = experiment_name + " " + str(experiment_counter)
-            first_filter = param['first_filter']
-            first_kernel = param['first_kernel']
-            second_filter= param['second_filter']
-            second_kernel = param['second_kernel']
-            third_filter= param['third_filter']
-            third_kernel = param['third_kernel']
-            batch_size = param['batch_size']
-            pooling = param['pooling']
-            optimizer = 'Nadam' 
-            dense_nodes = param['dense_nodes']
-            learning_rate = param['learning_rate']
-            batch_norm = param['regularization'][0]
-            L2_alpha = param['regularization'][1]
-            dropout = param['regularization'][2]
-            img_size = param['img_size']
-            
-            model = model_architecture(first_filter, 
-                                        first_kernel, 
-                                        second_filter, 
-                                        second_kernel, 
-                                        third_filter,
-                                        third_kernel,
-                                        pooling, 
-                                        dense_nodes, 
-                                        dropout, 
-                                        learning_rate,
-                                        batch_norm,
-                                        L2_alpha,
-                                        img_size)
+            model_name = f'{experiment_name} {experiment_counter}'
+
+            model = self.model_architecture(params)
                 
-            hist, results, fit_model = train_model(model, model_name)
+            hist, results_dict, fit_model = self.train_model(model,
+                                                        model_name,
+                                                        params)
 
             # legnth of any hist value = number of epochs                           
             epoch_count = len(hist.history['loss'])
             
-            # round all results to precision of 3
-            results = [round(result,3) for result in results]
-
             end_time = time.time()
             experiment_duration = end_time - start_time
 
-            # create results record for this training run
-            param_list = []
-            param_list.extend([model_name, 
-                            first_filter, 
-                            first_kernel, 
-                            second_filter,
-                            second_kernel,
-                            third_filter,
-                            third_kernel,
-                            dense_nodes,
-                            dropout,
-                            str(batch_norm),
-                            L2_alpha,
-                            learning_rate,
-                            epoch_count, 
-                            experiment_duration,
-                            optimizer, 
-                            batch_size,
-                            model.count_params()])
-            metrics_param_list =  param_list + results
-            
-            # first run creates df and names columns, each run after extends df
-            if experiment_counter == 1:
-                results_df = pd.DataFrame([metrics_param_list], 
-                                        columns = ['Experiment Name',
-                                                    'First Filter', 
-                                                    'First Kernel',
-                                                    'Second Filter',
-                                                    'Second Kernel',
-                                                    'Third Filter',
-                                                    'Third Kernel',
-                                                    'Dense Nodes',
-                                                    'Dropout Rate',
-                                                    'Batch Norm T/F',
-                                                    'L2 alpha',
-                                                    'Learning Rate',
-                                                    'Completed Epochs',
-                                                    'Duration (seconds)',
-                                                    'Optimizer',
-                                                    'Batch Size',
-                                                    'Model Parameters',
-                                                    'loss', 
-                                                    'acc', 
-                                                    'F1', 
-                                                    'val_loss', 
-                                                    'val_acc',
-                                                    'val_F1', 
-                                                    'test_loss', 
-                                                    'test_acc', 
-                                                    'test_F1'])
-            else:
-                df_length = len(results_df)
-                results_df.loc[df_length] = metrics_param_list
-            
+            # capture parameters and performance for model in dict to comapre
+            # with other trained models once training is completed
+            model_parameters_dict = {}
+            model_parameters_dict['model_name'] = model_name
+
+            for key in params.keys():
+                if key == 'regularization':
+                    model_parameters_dict['batch_norm'] = params[key][0]
+                    model_parameters_dict['l2_alpha'] = params[key][1]
+                    model_parameters_dict['dropout'] = params[key][2]
+                if key == 'pooling':
+                    model_parameters_dict[key] = str(params[key])
+                else:
+                    model_parameters_dict[key] = params[key]
+
+            model_parameters_dict['model_params_count'] = model.count_params()
+            model_parameters_dict['experiment_duration'] = experiment_duration
+            model_parameters_dict['completed_epochs']  = epoch_count
+
+            # combine model evaluation metrics dict with parameters dict
+            model_parameters_dict = {**model_parameters_dict, **results_dict}
+            all_results_dict_list.append(model_parameters_dict)
+
             # store fit model object for later analysis
             model_list.append(fit_model)
             model_name_list.append(model_name)
 
+        results_df = pd.DataFrame(all_results_dict_list)
         return [results_df, model_list, model_name_list]
 

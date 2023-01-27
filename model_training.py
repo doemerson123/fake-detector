@@ -1,27 +1,25 @@
 from utils.data_pipeline_utils import load_params
-from utils.modeling_util import permute_model_parameters, train_all_models
-from utils.data_pipeline_util import filepath
+from utils.modeling_util import ModelTraining
+from utils.data_pipeline_utils import filepath
 import pickle 
-
-params = load_params()
-max_epochs = params.model_training.model_params.max_epochs
-
-permuted_model_params = permute_model_parameters()
+import os
 
 # train all models using cartesian product of model_params and save artifacts
-model_artifacts = train_all_models('3 CNN 1 Dense', 
-                                    permuted_model_params, 
-                                    max_epochs)
+mt = ModelTraining()
+permuted_model_params = mt.permute_model_parameters()
 
-artifact_filename_list = ['results_df', 'model_list', 'model_name_list']
+model_artifacts = mt.train_all_models('3 CNN 1 Dense', permuted_model_params)
 
-#set model artifact location
-artifact_filepath, _ = filepath('artifact')
+artifact_path_list = []
+artifact_name_list = ['results_df', 'model_list', 'model_name_list']
+for file in artifact_name_list:
+    artifact_path_list.append(os.path.join(filepath('artifact'),
+                                            file + '.pkl'))
 
-# artifacts are saved to model_artifacts location
-for artifact, filename in zip(model_artifacts, artifact_filename_list):
-    with open(f"{artifact_filepath + filename}.pkl", "wb") as output_file:
+# aggregate artifacts are saved to the root artifacts location
+for artifact, path in zip(model_artifacts, artifact_path_list):
+    with open(path, 'wb') as output_file:
         pickle.dump(artifact, output_file)
-    output_file.close
+    output_file.close()
 
 
