@@ -1,9 +1,9 @@
 format:
 	#format code
-	black *.py mylib/*.py
+	black *.py utils/*.py deepfake_scraper/*.py
 lint:
 	#flake8 or #pylint
-	pylint --disable=R,C *.py mylib/*.py
+	pylint --disable=R,C *.py utils/*.py deepfake_scraper/*.py
 test:
 	#test
 	python -m pytest -vv --cov=mylib --cov=main test_*.py
