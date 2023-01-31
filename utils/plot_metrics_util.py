@@ -7,7 +7,6 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras import models
 from sklearn.metrics import confusion_matrix
 from utils.data_pipeline_utils import file_directory
-from typing import Tuple
 
 
 def save_confusion_matrix(
@@ -78,7 +77,7 @@ def save_loss_curve(
 
 def rounded_evaluate_metrics(
     model: Sequential, test_dataset: tf.constant, precision: int
-) -> Tuple(float):
+) -> tuple():
     """
     Performes model.evaluate and returns loss, accuracy, and f1 rounded to
     the precision value parameter
@@ -97,17 +96,29 @@ def save_performance_artifacts(
 ) -> None:
 
     """
-    Saves confusion matrix and loss curve to a new artifacts directory
-    folder named using the model name and performance metrics.
+    Saves confusion matrix and loss curve to a artifacts directory
+
+    Artifacts folder is renamed from model_name to include evaluation metrics 
+    leading with test accuracy to promote easy sorting.
+
+    From: model_name to {test_accuracy}_{model_name}_{test_loss}_{test_f1}
     """
 
     test_loss, test_accuracy, test_f1 = rounded_evaluate_metrics(model, test_dataset, 3)
+    
+    model_description = f"{test_accuracy}_{model_name}_{test_loss}_{test_f1}"
 
-    model_description = f"{model_name}_{test_loss}_{test_accuracy}_{test_f1}"
-    artifacts_dir = os.path.join(file_directory("artifact"), model_description)
+    artifacts_dir_old = os.path.join(file_directory("artifact"), model_name)
+
+    if not os.path.isdir(artifacts_dir_old):
+        os.makedirs(artifacts_dir_old)
+
+    artifacts_dir_new = os.path.join(file_directory("artifact"), model_description)
+    
+    os.rename(artifacts_dir_old, artifacts_dir_new)
 
     if not os.path.isdir(artifacts_dir):
         os.makedirs(artifacts_dir)
 
-    save_confusion_matrix(model, model_name, test_dataset, test_f1, artifacts_dir)
-    save_loss_curve(model_name, hist, test_loss, test_accuracy, test_f1, artifacts_dir)
+    save_confusion_matrix(model, model_name, test_dataset, test_f1, artifacts_dir_new)
+    save_loss_curve(model_name, hist, test_loss, test_accuracy, test_f1, artifacts_dir_new)

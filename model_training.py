@@ -6,6 +6,7 @@ from utils.modeling_util import ModelTraining
 
 # train all models using cartesian product of model_params and save artifacts
 mt = ModelTraining()
+print("hi mom")
 permuted_model_params = mt.permute_model_parameters()
 
 model_artifacts = mt.train_all_models("3 CNN 1 Dense", permuted_model_params)

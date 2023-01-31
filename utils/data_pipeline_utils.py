@@ -55,7 +55,7 @@ def file_directory(directory_type: str) -> str:
     if directory_type == "root":
         return root_directory
 
-
+@tf.function
 def load_image(image_path: str) -> Tuple[tf.constant, tf.constant]:
     """
     Converts both image file (X) and class (Y) into a tuple of tf.constant
@@ -69,10 +69,16 @@ def load_image(image_path: str) -> Tuple[tf.constant, tf.constant]:
 
     # parse the class label from the file path
     label = tf.strings.split(image_path, os.path.sep)[-2]
-    if label == "Fake":
-        value = tf.constant([1.0, 0.0])
-    if label == "Real":
-        value = tf.constant([0.0, 1.0])
+    def fake_label():
+        return tf.constant([1.0, 0.0])
+    def real_label():
+        return tf.constant([0.0, 1.0])
+
+    value = tf.cond(tf.math.equal(label, tf.constant(['Fake'], dtype=tf.string)), fake_label, real_label)
+    #if label == "Fake":
+    #    value = tf.constant([1.0, 0.0])
+    #if label == "Real":
+    #    value = tf.constant([0.0, 1.0])
 
     # return the image and the label tensors as tuple
     return (image, value)
@@ -115,12 +121,11 @@ def train_test_val_filepaths() -> tuple(List[str], List[str], List[str]):
     Returns filepaths for train, test, and validation data directories
     """
 
-    root_directory, slash = file_directory("root")
-    root_directory += slash
+    data_directory = file_directory("data")
 
-    train_filepath = list(paths.list_images(root_directory + "Train" + slash))
-    val_filepath = list(paths.list_images(root_directory + "Val" + slash))
-    test_filepath = list(paths.list_images(root_directory + "Test" + slash))
+    train_filepath = list(paths.list_images(os.path.join(data_directory,"Train")))
+    val_filepath = list(paths.list_images(os.path.join(data_directory,"Val")))
+    test_filepath = list(paths.list_images(os.path.join(data_directory,"Test")))
     return train_filepath, val_filepath, test_filepath
 
 

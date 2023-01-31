@@ -1,0 +1,19 @@
+name: fakedetector
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - pyyaml
+  - seaborn
+  - pylint
+  - selenium
+  - tqdm
+  - matplotlib
+  - scikit-learn
+  - time
+  - python-box 
+  - pathlib 
+  - imutils
+  
+

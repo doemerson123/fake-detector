@@ -37,7 +37,7 @@ model_training:
     third_kernel: [3]
     batch_size: [200]
     beta_1: [0.6, 0.63, 0.66]
-    pooling: ["layers.MaxPool2D", "layers.AvgPool2D"]
+    pooling: [MaxPool2D, AvgPool2D]
     dense_nodes: [32, 24, 16]
     learning_rate: [0.01, 0.001, 0.002]
     regularization: [[True, 0.001, 0.30], [True, 0.002, 0.40], [False, 0.001, 0.30], [True, 0.002, 0.40]]

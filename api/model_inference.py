@@ -21,8 +21,8 @@ src_path.joinpath(src_path, "api")
 #print("this is the path src", str(src_path))
 #sys.path.append('/app/utils')
 
-from app.utils.custom_metrics import StatefullMultiClassFBeta
-from app.utils.load_params import load_params
+from utils.custom_metrics import StatefullMultiClassFBeta
+from utils.load_params import load_params
 
 # custom metric used during training needed for prediction
 dependencies = {

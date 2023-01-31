@@ -1,24 +1,25 @@
-from time import time
+import time
 from itertools import product
 import pandas as pd
 import numpy as np
+import os
 import tensorflow as tf
 from tensorflow.keras.optimizers import Nadam
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import (BatchNormalization, Dropout, Conv2D,
-                                    Dense, Flatten)
+                                    Dense, Flatten, MaxPool2D, AvgPool2D)
 from tensorflow.keras.callbacks import (ModelCheckpoint, EarlyStopping,
                                         ReduceLROnPlateau)
 from utils.custom_metrics_util import StatefullMultiClassFBeta
 from utils.plot_metrics_util import save_performance_artifacts, rounded_evaluate_metrics
 from utils.data_pipeline_utils import load_params
 from utils.data_pipeline_utils import create_dataset, file_directory
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 
 class ModelTraining:
     """
-    Manages creating parameter space, model architecture, and experiment
+    Defines parameter space, creates model architecture, and performs experiment
     tracking.
     """
 
@@ -69,7 +70,7 @@ class ModelTraining:
 
         return param_dict
 
-    def permute_model_parameters(self) -> List(Dict):
+    def permute_model_parameters(self) -> List:
         """
         Creates cartesian product of model parameters from params.yaml by
         looping through the the list of num_conv_layers.
@@ -95,19 +96,22 @@ class ModelTraining:
         self,
         model: Sequential,
         params: dict,
-        filter_size: int,
+        filters: int,
         kernel_size: int,
         first_layer_bool: bool,
     ) -> Sequential:
         """
         Dynamically creates convolution layer using a single set of params
         """
-
+        
+        batch_norm = params["regularization"][0]
+        dropout = params["regularization"][2]
+        
         # first layer requires input parameters
         if first_layer_bool:
             model.add(
                 Conv2D(
-                    filter_size=filter_size,
+                    filters=filters,
                     kernel_size=(kernel_size, kernel_size),
                     strides=(1, 1),
                     activation=tf.nn.relu,
@@ -117,17 +121,17 @@ class ModelTraining:
         else:
             model.add(
                 Conv2D(
-                    filter_size=filter_size,
+                    filters=filters,
                     kernel_size=(kernel_size, kernel_size),
                     strides=(1, 1),
                     activation=tf.nn.relu,
                 )
             )
 
-        model.add(params["pooling"](pool_size=(2, 2), strides=2))
-        model.add(Dropout(params["dropout"]))
+        model.add(eval(params["pooling"])(pool_size=(2, 2), strides=2))
+        model.add(Dropout(dropout))
 
-        batch_norm = params["regularization"][0]
+        
         if batch_norm:
             model.add(BatchNormalization())
 
@@ -137,7 +141,9 @@ class ModelTraining:
         """
         Dynamically creates dense layer using params dict
         """
+
         batch_norm = params["regularization"][0]
+        l2_alpha = params["regularization"][1]
 
         if batch_norm:
             model.add(BatchNormalization())
@@ -146,12 +152,12 @@ class ModelTraining:
             Dense(
                 units=params["dense_nodes"],
                 activation=tf.nn.relu,
-                kernel_regularizer=tf.keras.regularizers.l2(params["l2_alpha"]),
+                kernel_regularizer=tf.keras.regularizers.l2(l2_alpha),
             )
         )
         return model
 
-    def model_architecture(self, params: dict) -> Sequential:
+    def model_architecture(self, params: dict, model_name: str) -> Sequential:
         """
         Creates Sequential model using single params dict from the list of
         permuted_model_params
@@ -189,8 +195,11 @@ class ModelTraining:
                 first_layer_bool,
             )
 
+        
         # dense layers
         model.add(Flatten())
+        
+        dense_layers = params["dense_layers"]
         for dense_layers in range(dense_layers):
             model = self.dense_layer(model, params)
         model.add(Dense(units=2, activation=tf.nn.softmax))
@@ -204,8 +213,8 @@ class ModelTraining:
         return model
 
     def train_model(
-        self, model: Sequential, model_name: str, params: dict
-    ) -> Tuple(Dict, Dict, Sequential):
+        self, params: dict, model_name: str,
+    ) -> tuple():
 
         batch_size = params["batch_size"]
 
@@ -213,7 +222,7 @@ class ModelTraining:
         val_dataset = create_dataset("val", batch_size)
         test_dataset = create_dataset("test", batch_size)
 
-        model = self.model_architecture(params)
+        model = self.model_architecture(params, model_name)
 
         early_stop = EarlyStopping(
             monitor="val_accuracy", patience=4, verbose=1
@@ -223,10 +232,13 @@ class ModelTraining:
         )
 
         # set model artifact location
-        checkpoint_filepath = file_directory("checkpoint")
+        checkpoint_filepath = os.path.join(file_directory("artifact"), model_name)
+
+        if not os.path.isdir(checkpoint_filepath):
+            os.makedirs(checkpoint_filepath)
 
         checkpoint = ModelCheckpoint(
-            checkpoint_filepath + model_name,
+            checkpoint_filepath,
             monitor="val_accuracy",
             verbose=1,
             save_best_only=True,
@@ -277,9 +289,7 @@ class ModelTraining:
             experiment_counter += 1
             model_name = f"{experiment_name} {experiment_counter}"
 
-            model = self.model_architecture(params)
-
-            hist, results_dict, fit_model = self.train_model(model, model_name, params)
+            hist, results_dict, fit_model = self.train_model(params, model_name)
 
             # legnth of any hist value = number of epochs
             epoch_count = len(hist.history["loss"])
