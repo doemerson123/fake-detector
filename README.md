@@ -27,10 +27,17 @@ Performance is excellent for this dataset (F1 score >99%) but the zero shot case
 
 ## Repo Contents
 Contained in this project are two applications 
-1. Webscraper/webcrawler that pulls down all the deepfakes we need from 
-2. A custom training harness that
-    - Ingests a yaml config file with model paramters(params.yaml)
+1. Webscraper/webcrawler that gathers deefakes to train models
+2. A custom OS independint experiment tracker
+    - Ingests a configuration file to manage artifacts, the data pipeline, and model parameters - **params.yaml**
+    - Permutes model parameters (cartesian product) to create the list of experiments
+    - Trains and evaluates each of the models
+        -  For each model, a new folder is created in the artifacts directory to store plots and saved model files (pb, hdf5, h5)
+        -  After all models are trained, an aggregate DataFrame with details of each experiment (parameters and results) is stored in the main artifacts directory
     - 
+
+## NOT Contained in this Repo
+This model is available to interact with on my personal website and using Streamlit - please ![play with it](https://donovinemerson.com/?p=273) and let me know what you think! Link to that repo is ![here](https://github.com/doemerson123/fake-detector-api)
 
 
 
