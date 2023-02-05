@@ -1,5 +1,8 @@
 # fake-detector
+https://i.insider.com/5c6d85ca2628986f7f3a5d02?width=1000&format=jpeg&auto=webp
+
 Classifies an image of a person as real or fake (GAN generated)
+
 
 Project tree 
 
