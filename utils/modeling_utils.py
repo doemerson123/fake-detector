@@ -6,12 +6,21 @@ import os
 import tensorflow as tf
 from tensorflow.keras.optimizers import Nadam
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import (BatchNormalization, Dropout, Conv2D,
-                                    Dense, Flatten, MaxPool2D, AvgPool2D)
-from tensorflow.keras.callbacks import (ModelCheckpoint, EarlyStopping,
-                                        ReduceLROnPlateau)
-from utils.custom_metrics_util import StatefullMultiClassFBeta
-from utils.plot_metrics_util import save_performance_artifacts, rounded_evaluate_metrics
+from tensorflow.keras.layers import (
+    BatchNormalization,
+    Dropout,
+    Conv2D,
+    Dense,
+    Flatten,
+    MaxPool2D,
+    AvgPool2D,
+)
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateau
+from utils.custom_metrics_utils import StatefullMultiClassFBeta
+from utils.plot_metrics_utils import (
+    save_performance_artifacts,
+    rounded_evaluate_metrics,
+)
 from utils.data_pipeline_utils import load_params
 from utils.data_pipeline_utils import create_dataset, file_directory
 from typing import Dict, List
@@ -19,12 +28,12 @@ from typing import Dict, List
 
 class ModelTraining:
     """
-    Defines parameter space, creates model architecture, and performs experiment
-    tracking.
+    Defines parameter space, creates model architecture, and performs
+    experiment tracking.
     """
 
-    def __init__(self) -> None:
-        self.params = load_params()
+    def __init__(self, params_file="params.yaml") -> None:
+        self.params = load_params(params_file)
         self.img_size = self.params.model_training.global_params.img_size
         self.epochs = self.params.model_training.global_params.max_epochs
 
@@ -101,12 +110,12 @@ class ModelTraining:
         first_layer_bool: bool,
     ) -> Sequential:
         """
-        Dynamically creates convolution layer using a single set of params
+        Creates convolution layer using a single set of params.
         """
-        
+
         batch_norm = params["regularization"][0]
         dropout = params["regularization"][2]
-        
+
         # first layer requires input parameters
         if first_layer_bool:
             model.add(
@@ -131,7 +140,6 @@ class ModelTraining:
         model.add(eval(params["pooling"])(pool_size=(2, 2), strides=2))
         model.add(Dropout(dropout))
 
-        
         if batch_norm:
             model.add(BatchNormalization())
 
@@ -169,7 +177,7 @@ class ModelTraining:
         optimizer = Nadam(learning_rate=params["learning_rate"], name="Nadam")
         model = Sequential()
 
-        # dynamically create list of filter/kernel keys for layer creation
+        # dynamically create list of ordinal filter/kernel keys to create layers
         # dicts preserve order from python 3.6 onward
         conv_filter_list = []
         conv_kernel_list = []
@@ -195,10 +203,9 @@ class ModelTraining:
                 first_layer_bool,
             )
 
-        
         # dense layers
         model.add(Flatten())
-        
+
         dense_layers = params["dense_layers"]
         for dense_layers in range(dense_layers):
             model = self.dense_layer(model, params)
@@ -210,29 +217,35 @@ class ModelTraining:
             loss="categorical_crossentropy",
             metrics=["accuracy", statefull_multi_class_fbeta],
         )
+
         return model
 
     def train_model(
-        self, params: dict, model_name: str,
+        self,
+        params: dict,
+        model_name: str,
     ) -> tuple():
 
         batch_size = params["batch_size"]
 
+        # the first time data is read in a cache is created so each model that
+        # is trained uses the same datasets. Important because the train set is
+        # heavily augmented and read twice
         train_dataset = create_dataset("train", batch_size)
         val_dataset = create_dataset("val", batch_size)
         test_dataset = create_dataset("test", batch_size)
 
         model = self.model_architecture(params, model_name)
 
-        early_stop = EarlyStopping(
-            monitor="val_accuracy", patience=4, verbose=1
-        )
+        early_stop = EarlyStopping(monitor="val_accuracy", patience=4, verbose=1)
         reduce_learning_rate = ReduceLROnPlateau(
             monitor="val_accuracy", factor=0.5, patience=2, min_lr=0.00001, verbose=2
         )
 
         # set model artifact location
-        checkpoint_filepath = os.path.join(file_directory("artifact"), model_name)
+        checkpoint_filepath = os.path.join(
+            file_directory("artifact"), model_name, model_name, "TF Model"
+        )
 
         if not os.path.isdir(checkpoint_filepath):
             os.makedirs(checkpoint_filepath)
@@ -274,7 +287,10 @@ class ModelTraining:
 
     def train_all_models(self, experiment_name, permuted_model_params):
         """
-        Loops through permuted_model_params and trains all models.
+        Loops through all permuted_model_params and trains each params dict.
+
+        Returns a DataFrame containing performance metrics for all models in
+        training run.
         """
 
         model_list = []
@@ -312,7 +328,7 @@ class ModelTraining:
                 else:
                     model_parameters_dict[key] = params[key]
 
-            model_parameters_dict["model_params_count"] = model.count_params()
+            model_parameters_dict["model_params_count"] = fit_model.count_params()
             model_parameters_dict["experiment_duration"] = experiment_duration
             model_parameters_dict["completed_epochs"] = epoch_count
 
@@ -320,9 +336,4 @@ class ModelTraining:
             model_parameters_dict = {**model_parameters_dict, **results_dict}
             all_results_dict_list.append(model_parameters_dict)
 
-            # store fit model object for later analysis
-            model_list.append(fit_model)
-            model_name_list.append(model_name)
-
-        results_df = pd.DataFrame(all_results_dict_list)
-        return [results_df, model_list, model_name_list]
+        return pd.DataFrame(all_results_dict_list)

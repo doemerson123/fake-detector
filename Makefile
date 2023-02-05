@@ -1,12 +1,12 @@
 format:
 	#format code
-	black *.py utils/*.py deepfake_scraper/*.py
+	black *.py utils/*.py deepfake_scraper/*.py test/*.py *.py
 lint:
 	#flake8 or #pylint
-	pylint --disable=R,C *.py utils/*.py deepfake_scraper/*.py
+	pylint --disable=R,C *.py utils/*.py deepfake_scraper/*.py api/*.py
 test:
 	#test
-	python -m pytest -vv --cov=mylib --cov=main test_*.py
+	python -m pytest -vv
 buildapi:
 	#build container
 	docker build . -t fakedetectorapi

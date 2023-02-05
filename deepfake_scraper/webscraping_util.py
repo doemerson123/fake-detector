@@ -6,7 +6,6 @@ import pandas as pd
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import requests
-import ssl
 from tqdm import tqdm
 import urllib
 from utils.data_pipeline_utils import load_params

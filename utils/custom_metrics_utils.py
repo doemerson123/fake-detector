@@ -9,13 +9,15 @@ class StatefullMultiClassFBeta(Metric):
     Custom Keras Fbeta metric used to calculate F beta during modeling
     """
 
-    def __init__(self,
-                name="state_full_binary_fbeta",
-                beta=1,
-                n_class=2,
-                average="macro",
-                epsilon=1e-7,
-                **kwargs):
+    def __init__(
+        self,
+        name="state_full_binary_fbeta",
+        beta=1,
+        n_class=2,
+        average="macro",
+        epsilon=1e-7,
+        **kwargs
+    ):
 
         # initializing an object of the super class
         super(StatefullMultiClassFBeta, self).__init__(name=name, **kwargs)
@@ -74,12 +76,17 @@ class StatefullMultiClassFBeta(Metric):
         self.recall = self.tp / (self.actual_positives + self.epsilon)
 
         # calculating fbeta score
-        self.fb = ((1 + self.beta_squared) * self.precision * self.recall / \
-            (self.beta_squared * self.precision + self.recall + self.epsilon))
+        self.fb = (
+            (1 + self.beta_squared)
+            * self.precision
+            * self.recall
+            / (self.beta_squared * self.precision + self.recall + self.epsilon)
+        )
 
         if self.average == "weighted":
-            return tf.reduce_sum(self.fb * self.actual_positives / \
-                                tf.reduce_sum(self.actual_positives))
+            return tf.reduce_sum(
+                self.fb * self.actual_positives / tf.reduce_sum(self.actual_positives)
+            )
 
         elif self.average == "raw":
             return self.fb

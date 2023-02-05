@@ -1,0 +1,47 @@
+
+
+
+root_directory:
+  training_locally_bool: True
+  local_filepath: D:\
+  local_slash: \
+  cloud_filepath: /home/ubuntu/
+  cloud_slash: /
+
+
+data_collection:
+  target_website: https://this-person-does-not-exist.com/en
+  fake_image_dir: ../data/fake_people
+  chromedriver_location: utils/chromedriver.exe
+  attribute_to_retreive: avatar
+  element_id: src
+  scraping_attempts: 10000
+  total_needed_fake_images: 60000
+
+model_inference:
+  saved_model_location: ../api
+  best_model_name: best_model.hdf5 
+
+model_training:
+  global_params:
+    img_size: 200
+    max_epochs: 100
+    num_conv_layers: [2, 3] # params need to be handled outside of permutation - so a global param
+  model_params: 
+    dense_layers: [1, 2] # 
+    first_filter: [32, 30, 25, 10] 
+    first_kernel: [5, 3] 
+    second_filter: [32, 30, 25, 10]     
+    second_kernel: [3]
+    third_filter: [16, 12, 9]     
+    third_kernel: [3]
+    batch_size: [200]
+    beta_1: [0.6, 0.63, 0.66]
+    pooling: [MaxPool2D, AvgPool2D]
+    dense_nodes: [32, 24, 16]
+    learning_rate: [0.01, 0.001, 0.002]
+    regularization: [[True, 0.001, 0.30], [True, 0.002, 0.40], [False, 0.001, 0.30], [True, 0.002, 0.40]]
+
+
+
+    

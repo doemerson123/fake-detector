@@ -9,9 +9,21 @@ from box import ConfigBox
 from typing import Tuple, List
 
 
+def training_locally():
+    """
+    Returns training locally bool from params.yaml which is used to drive os
+    specific behavior for file storage and retreival
+    """
+    if params.root_directory.training_locally_bool:
+        return True
+    else:
+        return False
+
+
 def load_params(params_file: str = "params.yaml") -> ConfigBox:
     """
-    Loads parameter file from root directory of project {params.yaml}
+    Converts parameter file {params.yaml} from yaml to ConfigBox in order to
+    use dot notation. Accepts other .yaml files - used in testing.
     """
 
     src_path = Path(__file__).parent.parent.resolve()
@@ -19,12 +31,10 @@ def load_params(params_file: str = "params.yaml") -> ConfigBox:
     try:
         with open(params_file, "r") as file:
             params = yaml.safe_load(file)
-    except:
-        print("ERROR: check that params.yaml exists and is named correctly")
-    finally:
-        file.close()
-
-    return ConfigBox(params)
+            file.close()
+            return ConfigBox(params)
+    except OSError:
+        raise FileNotFoundError("Unable to load params.yaml, check location and name")
 
 
 params = load_params()
@@ -33,20 +43,19 @@ img_size = params.model_training.global_params.img_size
 
 def file_directory(directory_type: str) -> str:
     """
-    Returns filepath and correct slash for the filesystem based on params.yaml
+    Returns os specific filepath for the filesystem based root_directory
+    parameters in params.yaml
+
 
     directory_type {'data', 'callback', 'artifact', 'root'}
     """
 
-    training_locally_bool = params.root_directory.training_locally_bool
-
-    if training_locally_bool:
+    if training_locally():
         root_directory = params.root_directory.local_filepath
     else:
         root_directory = params.root_directory.cloud_filepath
 
     if directory_type == "data":
-        # return root_directory + "Data", slash
         return os.path.join(root_directory, "Data")
     if directory_type == "callback":
         return os.path.join(root_directory, "Callbacks")
@@ -55,10 +64,15 @@ def file_directory(directory_type: str) -> str:
     if directory_type == "root":
         return root_directory
 
+
 @tf.function
 def load_image(image_path: str) -> Tuple[tf.constant, tf.constant]:
     """
-    Converts both image file (X) and class (Y) into a tuple of tf.constant
+    Custom tensorflow helper function used in creating datasets.
+
+    Reads jpeg files and converts to tf.float32 for processing.
+
+    Combines image file (X) and class (Y) into a tuple of tf.constant.
     """
 
     # read the image from disk, decodes, converts to tensor, and resizes
@@ -69,15 +83,22 @@ def load_image(image_path: str) -> Tuple[tf.constant, tf.constant]:
 
     # parse the class label from the file path
     label = tf.strings.split(image_path, os.path.sep)[-2]
+
     def fake_label():
         return tf.constant([1.0, 0.0])
+
     def real_label():
         return tf.constant([0.0, 1.0])
 
-    value = tf.cond(tf.math.equal(label, tf.constant(['Fake'], dtype=tf.string)), fake_label, real_label)
-    #if label == "Fake":
+    value = tf.cond(
+        tf.math.equal(label, tf.constant(["Fake"], dtype=tf.string)),
+        fake_label,
+        real_label,
+    )
+
+    # if label == "Fake":
     #    value = tf.constant([1.0, 0.0])
-    #if label == "Real":
+    # if label == "Real":
     #    value = tf.constant([0.0, 1.0])
 
     # return the image and the label tensors as tuple
@@ -87,10 +108,16 @@ def load_image(image_path: str) -> Tuple[tf.constant, tf.constant]:
 @tf.function
 def augment(image: tf.constant, label: tf.constant) -> tuple(tf.constant, tf.constant):
     """
-    Performs random perterbations of training images using random numpy states.
-    Action performed on each image as it's read from disk
+    Custom tensorflow helper function used in creating datasets.
 
-    Tensorflow datasets required label to pass through, its value is unchanged
+    Performs random perterbations of training images using pseudo-random numpy
+    states. Action performed on each image as it's read from disk.
+
+    The mod of rand_int is used to determine which alterations an image will
+    receive. Zero, one, or many alterations are possible for each image.
+
+    Tensorflow datasets require label in the signature but no changes are made
+    as it passes thorugh this function.
     """
 
     # choose random integer
@@ -118,31 +145,34 @@ def augment(image: tf.constant, label: tf.constant) -> tuple(tf.constant, tf.con
 
 def train_test_val_filepaths() -> tuple(List[str], List[str], List[str]):
     """
-    Returns filepaths for train, test, and validation data directories
+    Returns filepaths for train, test, and validation data directories.
+
+    Requires directory tree: Data/{Train, Val, Test}/{Class 1, Class 2}
     """
 
     data_directory = file_directory("data")
 
-    train_filepath = list(paths.list_images(os.path.join(data_directory,"Train")))
-    val_filepath = list(paths.list_images(os.path.join(data_directory,"Val")))
-    test_filepath = list(paths.list_images(os.path.join(data_directory,"Test")))
-    return train_filepath, val_filepath, test_filepath
+    train_filepaths = list(paths.list_images(os.path.join(data_directory, "Train")))
+    val_filepaths = list(paths.list_images(os.path.join(data_directory, "Val")))
+    test_filepaths = list(paths.list_images(os.path.join(data_directory, "Test")))
+    return train_filepaths, val_filepaths, test_filepaths
 
 
 def dataset_generator(filepath: str, batch_size: int, cache_name: str) -> tf.dataset:
     """
     Defines dataset generators used to create batches for model training.
 
-    Train data is shuffled, perturbed, and read into the training dataset
-    twice with diferent pertubations each time using .repeat(1)
+    Note: train data is shuffled, perturbed, and read into the training dataset
+    a second time with diferent alterations using .repeat(1)
 
-    Validation and test data are not modified.
+    Note: The first time data is read in a cache is created so each model that
+    is trained uses the same datasets. Important because the train set is
+    heavily augmented and read twice
+
+    Validation and test data are not modified and simply read from disk
     """
-
-    # create dataset generator object
     dataset = tf.data.Dataset.from_tensor_slices(filepath)
 
-    # define parameters for dataset generators
     if "Train" in filepath:
         # filepath needed to calculate the lenth for shuffle - only for train
         train_filepath, _, _ = train_test_val_filepaths()
@@ -171,7 +201,8 @@ def create_dataset(dataset_type: str, batch_size: int) -> tf.dataset:
     Generates required dataset {train, val, test}
 
     Reminder: train data is randomized, perturbed, and read into
-    the train dataset twice with diferent pertubations
+    the train dataset twice with diferent pertubations then cached after the
+    first read from disk
 
     batch_size = number of images to retreive from disk - int
     """

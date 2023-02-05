@@ -23,10 +23,10 @@ model_training:
     max_epochs: 1
     num_conv_layers: [2] # params need to be handled outside of permutation - so a global param
   model_params: 
-    dense_layers: [1] # 
-    first_filter: [10] 
-    first_kernel: [5] 
-    second_filter: [15]     
+    dense_layers: [1, 2] # 
+    first_filter: [10, 20] 
+    first_kernel: [3] 
+    second_filter: [10]     
     second_kernel: [3]
     batch_size: [2000]
     beta_1: [0.66]

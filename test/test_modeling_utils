@@ -1,0 +1,13 @@
+import pytest
+from utils.modeling_utils import ModelTraining
+from tensorflow.keras.models import Sequential
+from test.conftest import mock_params_dict
+
+mt = ModelTraining()
+
+def test_remove_extra_conv_params(mock_params_dict):
+    two_conv_layer_params = mt.remove_extra_conv_params(mock_params_dict, 2)
+    assert not two_conv_layer_params.third_kernel
+    assert not two_conv_layer_params.third_filter
+    assert 1==1
+

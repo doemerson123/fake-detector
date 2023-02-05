@@ -16,6 +16,9 @@ def save_confusion_matrix(
     test_f1: float,
     artifacts_dir: str,
 ) -> None:
+    """
+    Saves confusion matrix as jpg with a filname using model_name and F1 score
+    """
 
     predictions = model.predict(test_dataset)
     y_hat = np.argmax(predictions, axis=1)
@@ -52,6 +55,10 @@ def save_loss_curve(
     test_f1: float,
     artifacts_dir: str,
 ) -> None:
+    """
+    Saves loss curve as jpg with a filname using model_name and performance 
+    metrics. 
+    """
 
     loss = hist.history["loss"]
     accuracy = hist.history["accuracy"]
@@ -91,6 +98,23 @@ def rounded_evaluate_metrics(
     return rounded_loss, rounded_accuracy, rounded_f1
 
 
+def multiple_save_model(model: Sequential, model_name: str, path: str):
+    """
+    Saves trained models as hdf5 and h5. However these backups will not be the 
+    best performant model that is saved as a callback using the .pb format. 
+
+    Alternative file formats are helpful when hosting for inference
+    """
+
+    # create new directory for model files
+
+    saved_models_dir = os.path.join(path, f"{model_name} h5 Files")
+    os.makedirs(saved_models_dir)
+
+    model.save(os.path.join(saved_models_dir, f"{model_name}.hdf5"))
+    model.save(os.path.join(saved_models_dir, f"{model_name}.h5"))
+
+
 def save_performance_artifacts(
     model: Sequential, model_name: str, hist: dict, test_dataset: tf.constant
 ) -> None:
@@ -98,27 +122,26 @@ def save_performance_artifacts(
     """
     Saves confusion matrix and loss curve to a artifacts directory
 
-    Artifacts folder is renamed from model_name to include evaluation metrics 
+    Artifacts folder is renamed from model_name to include evaluation metrics ccon
     leading with test accuracy to promote easy sorting.
 
     From: model_name to {test_accuracy}_{model_name}_{test_loss}_{test_f1}
     """
 
     test_loss, test_accuracy, test_f1 = rounded_evaluate_metrics(model, test_dataset, 3)
-    
-    model_description = f"{test_accuracy}_{model_name}_{test_loss}_{test_f1}"
 
     artifacts_dir_old = os.path.join(file_directory("artifact"), model_name)
-
-    if not os.path.isdir(artifacts_dir_old):
-        os.makedirs(artifacts_dir_old)
-
+    multiple_save_model(model, model_name, artifacts_dir_old)
+    model_description = (
+        f"{test_accuracy}-Acc {test_f1}-F1 {test_loss}-Loss -- {model_name}"
+    )
     artifacts_dir_new = os.path.join(file_directory("artifact"), model_description)
-    
+
+    # if not os.path.isdir(artifacts_dir_new):
+    #    os.makedirs(artifacts_dir_new)
+
+    save_confusion_matrix(model, model_name, test_dataset, test_f1, artifacts_dir_old)
+    save_loss_curve(
+        model_name, hist, test_loss, test_accuracy, test_f1, artifacts_dir_old
+    )
     os.rename(artifacts_dir_old, artifacts_dir_new)
-
-    if not os.path.isdir(artifacts_dir):
-        os.makedirs(artifacts_dir)
-
-    save_confusion_matrix(model, model_name, test_dataset, test_f1, artifacts_dir_new)
-    save_loss_curve(model_name, hist, test_loss, test_accuracy, test_f1, artifacts_dir_new)
