@@ -42,7 +42,7 @@ This model is available to interact with on my ![personal website](https://donov
 
 ## Project Tree:
 
-Most logic resides in the utils files. The deepfake_scraper folder is stand alone however model_training.py relies on all files in the utils folder. 
+Most logic resides in the utils files. The deepfake scraper and testing folders are stand alone however model_training.py in the root directory relies on all the files in the utils folder. 
 
     |- deepfake_scraper
         |- data_collection.py ****Entrypoint for webscraping
@@ -69,7 +69,7 @@ Most logic resides in the utils files. The deepfake_scraper folder is stand alon
 
 
 ## Is this thing on????
-Since all configuration for the app occurs in params.yaml, entry points do not have a CLI. Executing either of the two .py files/modules in the terminal will trigger the logic. 
+Since all configuration for the app occurs in params.yaml, entry points do not have a CLI. Executing either of the two .py files/modules in the terminal will trigger the logic: `python model_training.py` or `python data_collection.py` 
 
 Test strategy is implemented using pytest. All code and supporting files reside in the test folder. Calling pytest in your favorite way will bring it to life.
 
