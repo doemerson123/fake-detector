@@ -10,7 +10,7 @@ Okay probably not - they're everywhere. That's what this project is about.
 
 
 ## TLDR: 
-This project trains lots of different convolutional neural networks (CNNs) and tracks the experiments to find the best model to spot deepfakes - from scratch (no MLFlow or gridsearch). The best model is ![shared online](https://donovinemerson.com/?p=273) (manually for now). As an added bonus, this model will train you how *NOT* to not need it by explaining what it finds most important about the image for its prediction. 
+This project trains lots of different convolutional neural networks (CNNs) and tracks the experiments to find the best model to spot deepfakes - from scratch (without MLFlow or gridsearch). The best model is ![shared online](https://donovinemerson.com/?p=273) (manually for now). As an added bonus, this model will train *YOU* how **not** to not need it by explaining what it finds most important about the image for its prediction. 
 
 There were four convolution layers in the best model. We see each one light up green where the model found the most important information (eyes, structural area, outlines, and teeth). Protip: the areas with the highest geometric variablility are where to look first.
 
@@ -19,7 +19,7 @@ There were four convolution layers in the best model. We see each one light up g
 PS: Apologies to any visitors who are red/green colorblind! Unfortunately this color scheme was so much better than the other choices. 
 
 
-## High Level:
+## Diving Deeper:
 That's not all that's been done in this project but we'll get into that, well... now.
 
 Model training was conducted on ![StyleGAN generated images](https://arxiv.org/pdf/1812.04948.pdf) from http://this-person-does-not-exist.com. The benchmark "real" human pictures are from the ![Flicker Faces dataset FFHQ](https://github.com/NVlabs/ffhq-dataset). 
@@ -34,22 +34,44 @@ Contained in this project are two applications
     - Trains and evaluates each of the models
         -  For each model, a new folder is created in the artifacts directory to store plots and saved model files (pb, hdf5, h5)
         -  After all models are trained, an aggregate DataFrame with details of each experiment (parameters and results) is stored in the main artifacts directory
-    - 
+    
 
 ## NOT Contained in this Repo
-This model is available to interact with on my personal website and using Streamlit - please ![play with it](https://donovinemerson.com/?p=273) and let me know what you think! Link to that repo is ![here](https://github.com/doemerson123/fake-detector-api)
+This model is available to interact with on my ![personal website](https://donovinemerson.com/?p=273) and is served using Streamlit - please play with it and let me know what you think! Link to that repo is ![here](https://github.com/doemerson123/fake-detector-api)
 
 
+## Project Tree:
 
-Classifies an image of a person as real or fake (GAN generated)
+Most logic resides in the utils files. The deepfake_scraper folder is stand alone however model_training.py relies on all files in the utils folder. 
 
-Project tree 
+    |- deepfake_scraper
+        |- data_collection.py ****Entrypoint for webscraping
+        |- webscraping_util.py
+    |- test
+        |- Fake
+            |- test_Fake 4.jpg
+        |- conftest.py
+        |- test_data_pipeline.py
+        |- test_modeling_utils.py
+        |- test_params.yaml
+    |- utils
+        |- custom_metrics_utils.py
+        |- data_pipeline_utils.py
+        |- modeling utils.py
+        |- plot_metrics_utils.py
+    |- model_training.py ****Entrypoint for model training
+    |- params.yaml
+    |- Dockerfile
+    |- Makefile
+    |- environment.yml
+    |- requirements.txt
+    |- README.md
 
-Images of streamlit 
 
-additional detail - slides
+## Is this thing on????
+Since all configuration for the app occurs in params.yaml, entry points do not have a CLI. Executing either of the two .py files/modules in the terminal will trigger the logic. 
 
-how to interact with API
+Test strategy is implemented using pytest. All code and supporting files reside in the test folder. Calling pytest in your favorite way will bring it to life.
 
 
 
