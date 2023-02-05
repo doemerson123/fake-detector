@@ -2,7 +2,7 @@
 ## You've just spotted your first deepfake
 Okay probably not - they're everywhere. That's what this project is about. 
 1. Using technology to spot deepfakes 
-2. Learning how to spot them without the aid of technology using explainable AI
+2. Learning how to spot them more easily without the aid of technology using explainable AI
 
 
 
