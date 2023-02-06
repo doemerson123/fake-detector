@@ -21,9 +21,8 @@ model_training:
   global_params:
     img_size: 200
     max_epochs: 1
-    num_conv_layers: [2] # params need to be handled outside of permutation - so a global param
-  model_params: 
-    dense_layers: [1] # 
+    num_conv_layers: [2] 
+    dense_layers: [1]  
     first_filter: [10] 
     first_kernel: [5] 
     second_filter: [15]     

@@ -284,8 +284,7 @@ class ModelTraining:
         save_performance_artifacts(model, model_name, hist, test_dataset)
 
         return hist, results_dict, model
-
-    def train_all_models(self, experiment_name, permuted_model_params):
+train_all_models(self, experiment_name, permuted_model_params):
         """
         Loops through all permuted_model_params and trains each params dict.
 
@@ -336,4 +335,4 @@ class ModelTraining:
             model_parameters_dict = {**model_parameters_dict, **results_dict}
             all_results_dict_list.append(model_parameters_dict)
 
-        return pd.DataFrame(all_results_dict_list)
+    return pd.DataFrame(all_results_dict_list)

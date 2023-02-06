@@ -40,4 +40,4 @@ RUN pip install tensorflow-gpu=2.3
 
 
 #RUN echo "conda list"
-#CMD ["conda", "run", "-n", "fakedetector", "python3", "model_training.py"]
+CMD ["conda", "run", "-n", "fakedetector", "python3", "model_training.py"]
