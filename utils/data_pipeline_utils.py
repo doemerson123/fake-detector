@@ -32,18 +32,16 @@ def load_params(params_file: str = "params.yaml") -> ConfigBox:
     
     Parameters
     ----------
-    params_file : str, optional
-        Path to the YAML file containing the parameters, by default "params.yaml".
+        params_file (str, optional): Path to the YAML file containing the 
+        parameters, by default "params.yaml".
     
     Returns
     -------
-    ConfigBox
-        Object containing the parameters from the YAML file.
+        ConfigBox: Object containing the parameters from the YAML file.
     
     Raises
     ------
-    FileNotFoundError
-        If the specified YAML file is not found.
+        FileNotFoundError: If the specified YAML file is not found.
     """
 
     src_path = Path(__file__).parent.parent.resolve()
@@ -198,8 +196,8 @@ def train_test_val_filepaths() -> tuple(List[str], List[str], List[str]):
 
     Returns
     -------
-    tuple(List[str], List[str], List[str])
-        List of file paths for the train set, validation set, and test set.
+        tuple(List[str], List[str], List[str]): List of file paths for the 
+        train set, validation set, and test set.
     """
 
     data_directory = file_directory("data")
@@ -231,7 +229,7 @@ def dataset_generator(filepath: str, batch_size: int, cache_name: str) -> tf.dat
 
     Returns:
     ----------
-    tf.dataset: a TensorFlow dataset 
+        tf.dataset: a TensorFlow dataset 
 
     
     """
@@ -275,7 +273,7 @@ def create_dataset(dataset_type: str, batch_size: int) -> tf.dataset:
     
     Returns:
     ----------
-    tf.dataset: a TensorFlow dataset 
+        tf.dataset: a TensorFlow dataset 
     """
 
     train_filepath, val_filepath, test_filepath = train_test_val_filepaths()

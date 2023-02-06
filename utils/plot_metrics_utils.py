@@ -56,8 +56,8 @@ def save_loss_curve(
     artifacts_dir: str,
 ) -> None:
     """
-    Saves loss curve as jpg with a filname using model_name and performance 
-    metrics. 
+    Saves loss curve as jpg with a filname using model_name and performance
+    metrics.
     """
 
     loss = hist.history["loss"]
@@ -100,8 +100,8 @@ def rounded_evaluate_metrics(
 
 def multiple_save_model(model: Sequential, model_name: str, path: str):
     """
-    Saves trained models as hdf5 and h5. However these backups will not be the 
-    best performant model that is saved as a callback using the .pb format. 
+    Saves trained models as hdf5 and h5. However these backups will not be the
+    best performant model that is saved as a callback using the .pb format.
 
     Alternative file formats are helpful when hosting for inference
     """

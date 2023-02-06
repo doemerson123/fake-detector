@@ -33,6 +33,18 @@ class ModelTraining:
     """
 
     def __init__(self, params_file="params.yaml") -> None:
+        """
+        Initializes the instance of the `ModelTraining` class.
+
+        Parameters
+        ----------
+            params_file (str): The path to the YAML file containing the model
+            parameters.
+
+        Returns
+        --------
+            None
+        """
         self.params = load_params(params_file)
         self.img_size = self.params.model_training.global_params.img_size
         self.epochs = self.params.model_training.global_params.max_epochs
@@ -52,6 +64,17 @@ class ModelTraining:
         params.yaml, python libraries that handle integer/ordinal word
         conversion were not implemented to intentionally force users to update
         params.yaml and this code if extended beyond 10 convolution layers.
+
+        Parameters
+        ----------
+            param_dict (dict): The dictionary containing the model parameters.
+            num_conv_layers (int): The number of convolution layers in the
+            model.
+
+        Returns
+        --------
+            dict: The updated dictionary with unnecessary convolution
+            parameters removed.
         """
 
         ordinal_list = [
@@ -85,6 +108,11 @@ class ModelTraining:
         looping through the the list of num_conv_layers.
 
         Each dict in the returned list will trained and evaluated.
+
+        Returns
+        --------
+            list: A list of dictionaries containing the permuted model 
+            parameters.
         """
 
         num_conv_layers_list = self.params.model_training.global_params.num_conv_layers
@@ -111,6 +139,19 @@ class ModelTraining:
     ) -> Sequential:
         """
         Creates convolution layer using a single set of params.
+    
+        Parameters
+        ----------
+            model (tf.keras.Sequential): The Keras model object.
+            params (dict): The dictionary containing the model parameters.
+            filters (int): The number of filters in the convolution layer.
+            kernel_size (int): The size of the kernel in the convolution layer.
+            first_layer_bool (bool): A flag indicating whether this is the 
+            first layer in the model.
+            
+        Returns
+        -------
+            tf.keras.Sequential: The updated Keras model object.
         """
 
         batch_norm = params["regularization"][0]
@@ -147,9 +188,17 @@ class ModelTraining:
 
     def dense_layer(self, model: Sequential, params: dict) -> Sequential:
         """
-        Dynamically creates dense layer using params dict
-        """
+        Creates dense layer using a single set of params.
 
+        Parameters
+        ----------
+            model (tf.keras.Sequential): The Keras model object.
+            params (dict): The dictionary containing the model parameters.
+            
+        Returns
+        -------
+            tf.keras.Sequential: The updated Keras model object.
+        """
         batch_norm = params["regularization"][0]
         l2_alpha = params["regularization"][1]
 
@@ -169,6 +218,15 @@ class ModelTraining:
         """
         Creates Sequential model using single params dict from the list of
         permuted_model_params
+
+        Parameters
+        ----------
+            params (dict): Dictionary containing the model parameters.
+            model_name (str): The name of the model.
+        
+        Returns
+        -------
+            tf.keras.Sequential: The updated Tensorflow Keras model object.
         """
 
         # custom F1 metric
@@ -225,7 +283,19 @@ class ModelTraining:
         params: dict,
         model_name: str,
     ) -> tuple():
-
+        """
+        Trains the model using specified parameters. Saves best model 
+        performance as .pb in a new folder in the artifacts directory.
+        
+        Parameters
+        ----------
+            params (dict): Dictionary containing the model parameters.
+            model_name (str): The name of the model.
+        
+        Returns
+        -------
+            tuple: A tuple of the history object and dictionary of performance results.
+        """
         batch_size = params["batch_size"]
 
         # the first time data is read in a cache is created so each model that
@@ -284,12 +354,27 @@ class ModelTraining:
         save_performance_artifacts(model, model_name, hist, test_dataset)
 
         return hist, results_dict, model
-train_all_models(self, experiment_name, permuted_model_params):
-        """
-        Loops through all permuted_model_params and trains each params dict.
 
-        Returns a DataFrame containing performance metrics for all models in
-        training run.
+    def train_all_models(self, experiment_name, permuted_model_params):
+        """
+        Loops through all permuted_model_params and trains a model for each 
+        params dict.
+
+        Parameters
+        ----------
+            experiment_name (str): The name of the set of experiments
+            permuted_model_params (list): A list of dictionaries, each 
+            representing a set of model parameters to train.
+            
+        Returns
+        -------
+            pandas.DataFrame: A dataframe containing performance metrics for
+            all models in training run. Each row represents a single model's
+            information, including model parameters, evaluation metrics, and 
+            training information.
+
+
+
         """
 
         model_list = []
@@ -335,4 +420,4 @@ train_all_models(self, experiment_name, permuted_model_params):
             model_parameters_dict = {**model_parameters_dict, **results_dict}
             all_results_dict_list.append(model_parameters_dict)
 
-    return pd.DataFrame(all_results_dict_list)
+        return pd.DataFrame(all_results_dict_list)
