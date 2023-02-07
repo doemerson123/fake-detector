@@ -11,9 +11,9 @@ from typing import Tuple, List
 
 def training_locally():
     """
-    Check if the training is being done locally. Used to drive OS specific 
+    Check if the training is being done locally. Used to drive OS specific
     behavior.
-    
+
     Returns
     -------
     bool
@@ -29,16 +29,16 @@ def load_params(params_file: str = "params.yaml") -> ConfigBox:
     """
     Load parameters from a YAML file and return as a ConfigBox object to allow
     for dot notation.
-    
+
     Parameters
     ----------
-        params_file (str, optional): Path to the YAML file containing the 
+        params_file (str, optional): Path to the YAML file containing the
         parameters, by default "params.yaml".
-    
+
     Returns
     -------
         ConfigBox: Object containing the parameters from the YAML file.
-    
+
     Raises
     ------
         FileNotFoundError: If the specified YAML file is not found.
@@ -66,7 +66,7 @@ def file_directory(directory_type: str) -> str:
 
     Parameters:
     ----------
-        directory_type (str): directory type to get filepath for 
+        directory_type (str): directory type to get filepath for
             {'data', 'callback', 'artifact', 'root'}
 
     Returns:
@@ -102,11 +102,11 @@ def load_image(image_path: str) -> Tuple[tf.constant, tf.constant]:
 
     Returns:
     --------
-        Tuple[tf.constant, tf.constant]: A tuple of two tensors, the first 
-        representing the image and the second representing the label of the 
-        image. The image is a 3 channel tensor of dtype tf.float32 and the 
-        label is a 2 element tensor of dtype tf.constant. The label represents 
-        the class of the image, either 'Fake' or 'Real', with [1.0, 0.0] and 
+        Tuple[tf.constant, tf.constant]: A tuple of two tensors, the first
+        representing the image and the second representing the label of the
+        image. The image is a 3 channel tensor of dtype tf.float32 and the
+        label is a 2 element tensor of dtype tf.constant. The label represents
+        the class of the image, either 'Fake' or 'Real', with [1.0, 0.0] and
         [0.0, 1.0] respectively.
     """
 
@@ -141,7 +141,7 @@ def augment(image: tf.constant, label: tf.constant) -> tuple(tf.constant, tf.con
     """
     Custom tensorflow helper function used in creating datasets.
 
-    The function performs random changes to the image, including random hue, 
+    The function performs random changes to the image, including random hue,
     saturation, brightness, contrast changes, and a random flip on the vertical
     axis.
 
@@ -152,13 +152,13 @@ def augment(image: tf.constant, label: tf.constant) -> tuple(tf.constant, tf.con
     as it passes thorugh this function.
 
     Randomly augment an image and its label.
-    
+
 
     Parameters
     ----------
         image (tf.constant): The image to be augmented.
         label (tf.constant): The label associated with the image.
-    
+
     Returns
     -------
     tuple(tf.constant, tf.constant)
@@ -196,7 +196,7 @@ def train_test_val_filepaths() -> tuple(List[str], List[str], List[str]):
 
     Returns
     -------
-        tuple(List[str], List[str], List[str]): List of file paths for the 
+        tuple(List[str], List[str], List[str]): List of file paths for the
         train set, validation set, and test set.
     """
 
@@ -213,11 +213,11 @@ def dataset_generator(filepath: str, batch_size: int, cache_name: str) -> tf.dat
     Defines dataset generators used to create batches for model training.
 
     Notes:
-    - If the filepath contains 'Train', the dataset is shuffled, augmented for 
+    - If the filepath contains 'Train', the dataset is shuffled, augmented for
     training, and read into the dataset TWICE.
     - Dataset is unmodified for validation or testing.
-    - The first time the dataset is created, a cache is saved with the 
-    specified `cache_name` so that subsequent calls to the function will reuse 
+    - The first time the dataset is created, a cache is saved with the
+    specified `cache_name` so that subsequent calls to the function will reuse
     the cache. This saves time and compute resources plus ensures all
     experiments are conducted on the same underlying data.
 
@@ -229,9 +229,9 @@ def dataset_generator(filepath: str, batch_size: int, cache_name: str) -> tf.dat
 
     Returns:
     ----------
-        tf.dataset: a TensorFlow dataset 
+        tf.dataset: a TensorFlow dataset
 
-    
+
     """
     dataset = tf.data.Dataset.from_tensor_slices(filepath)
 
@@ -265,15 +265,15 @@ def create_dataset(dataset_type: str, batch_size: int) -> tf.dataset:
     Reminder: train data is randomized, perturbed, and read into
     the train dataset twice with diferent pertubations then cached after the
     first read from disk
-    
+
     Parameters
     ----------
         dataset_type (str): type of dataset to generate {'train', 'val', 'test'}
-        batch_size (int): number of images to retreive from disk 
-    
+        batch_size (int): number of images to retreive from disk
+
     Returns:
     ----------
-        tf.dataset: a TensorFlow dataset 
+        tf.dataset: a TensorFlow dataset
     """
 
     train_filepath, val_filepath, test_filepath = train_test_val_filepaths()

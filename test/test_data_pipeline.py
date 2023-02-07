@@ -47,7 +47,16 @@ class TestDataPipelineUtils:
 
     def test_load_params_training_locally(self, load_test_params: ConfigBox) -> None:
         """
-        Confirms test_params.yaml has training_locally set to True
+        Confirm the value of training_locally in test_params.yaml is set to True.
+
+        Parameters
+        ----------
+            load_test_params (ConfigBox): A ConfigBox instance containing 
+            the parameters loaded from test_params.yaml
+
+        Returns
+        -------
+            None
         """
 
         training_locally = load_test_params.root_directory.training_locally_bool
@@ -56,7 +65,11 @@ class TestDataPipelineUtils:
 
     def test_load_params_open(self) -> None:
         """
-        Confirm params.yaml and test_params.yaml will open and has correct type
+        Confirm params.yaml and test_params.yaml can be opened and have the correct type.
+
+        Returns
+        -------
+            None
         """
         assert load_params()  # tests params.yaml as default optional parameter
         assert load_params(path.join("test", "test_params.yaml")) != None
@@ -64,8 +77,12 @@ class TestDataPipelineUtils:
 
     def test_load_params_not_found(self) -> None:
         """
-        Confirms that if file is not found, a FileNotFoundError will be raised
-        """
+        Confirm FileNotFoundError is raised if the file is not found.
+
+        Returns
+        -------
+            None
+    """
         with pytest.raises(FileNotFoundError):
             load_params("bad_filename.yaml")
 
@@ -77,8 +94,17 @@ class TestDataPipelineUtils:
 
     def test_file_directory_resolution(self, load_test_params: ConfigBox) -> None:
         """
-        Validates return path values for file_directory method that points
-        the app to project assets and artifacts.
+        Validate that the file_directory method points to the correct asset and
+        artifact paths.
+
+        Parameters
+        ----------
+            load_test_params (ConfigBox): A ConfigBox instance containing the
+            parameters loaded from test_params.yaml
+
+        Returns
+        -------
+            None
         """
         local_root = load_test_params.root_directory.local_filepath
         cloud_root = load_test_params.root_directory.cloud_filepath
@@ -97,8 +123,16 @@ class TestDataPipelineUtils:
 
     def test_load_image_open(self, test_image_dir: str) -> None:
         """
-        Confirms load_image will successfully open the test jpeg file found
-        in the test folder and return a tuple
+        Confirm that load_image can successfully open the test jpeg file 
+        and return a tuple.
+
+        Parameters
+        ----------
+            test_image_dir (str): The path to the test jpeg file
+
+        Returns
+        -------
+            None
         """
 
         assert load_image(test_image_dir)
@@ -112,6 +146,14 @@ class TestDataPipelineUtils:
 
         Due to the file structure of the underlying test data the folder named
         "Fake" is required since the tree is traversed to check for that value.
+    
+        Parameters
+        ----------
+            test_image_dir (str): The path to the test image
+
+        Returns
+        -------
+            None
         """
         test_label = load_image(test_image_dir)[1]
         known_label = constant([1.0, 0.0])
@@ -119,8 +161,17 @@ class TestDataPipelineUtils:
 
     def test_load_image_shape(self, test_image_dir: str, img_size: int) -> None:
         """
-        Confirms load_image returns a tensor with the appropriate shape based
-        on the img_size paramter in test_params.yaml.
+        Confirms load_image returns a tensor with the appropriate shape based 
+        on the img_size parameter in test_params.yaml.
+
+        Parameters
+        ----------
+            test_image_dir (str): The path to the test image
+            img_size (int): The desired size of the image
+
+        Returns
+        -------
+            None
         """
         test_image_shape = load_image(test_image_dir)[0].shape
         known_image_shape = [img_size, img_size, 3]
@@ -134,6 +185,15 @@ class TestDataPipelineUtils:
         randomness. This is acceptable since this method randomly alters
         images. It does not alter every image in the data set. It's unlikely
         two attempts will result in no image augmentation.
+
+        Parameters
+        ----------
+            test_image_dir (str): The path to the test image
+            img_size (int): The desired size of the image
+        
+        Returns
+        -------
+            None
         """
         test_tuple = load_image(test_image_dir)
         test_augmented_tuple = augment(test_tuple[0], test_tuple[1])
@@ -154,6 +214,10 @@ class TestDataPipelineUtils:
     def test_train_test_val_filepaths_name(self) -> None:
         """
         Validates path values for train, val, and test directories.
+
+        Returns
+        -------
+            None
         """
         train, val, test = train_test_val_filepaths()
         data_directory = file_directory("data")

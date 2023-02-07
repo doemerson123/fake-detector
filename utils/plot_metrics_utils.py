@@ -18,8 +18,19 @@ def save_confusion_matrix(
 ) -> None:
     """
     Saves confusion matrix as jpg with a filname using model_name and F1 score
-    """
 
+    Parameters
+    ----------
+        model (tf.keras.Sequential): The Keras model object.
+        model_name (str): The name of the model.
+        test_dataset (tf.constant): The test dataset used to generate the predictions.
+        test_f1 (float): The F1 score of the model.
+        artifacts_dir (str): The directory where the image file will be saved.
+
+    Returns
+    -------
+        None
+    """
     predictions = model.predict(test_dataset)
     y_hat = np.argmax(predictions, axis=1)
     y_true = np.concatenate([y for x, y in test_dataset], axis=0)
@@ -58,6 +69,20 @@ def save_loss_curve(
     """
     Saves loss curve as jpg with a filname using model_name and performance
     metrics.
+
+    Parameters
+    ----------
+        model_name (str): The string representing the name of the model.
+        hist (dict): The dictionary containing the training history of the model.
+        test_loss (float): The loss score of the model's performance.
+        test_acc (float): The accuracy score of the model's performance.
+        test_f1 (float): The F1 score of the model's performance.
+        artifacts_dir (str): The string representing the directory to save the
+        artifact in.
+
+    Returns
+    -------
+        None
     """
 
     loss = hist.history["loss"]
@@ -86,8 +111,18 @@ def rounded_evaluate_metrics(
     model: Sequential, test_dataset: tf.constant, precision: int
 ) -> tuple():
     """
-    Performes model.evaluate and returns loss, accuracy, and f1 rounded to
-    the precision value parameter
+    Perform model evaluation and return loss, accuracy, and f1 rounded to the
+    specified precision.
+
+    Parameters
+    ----------
+        model (tf.keras.Sequential): The Keras model object.
+        test_dataset (tf.constant): The dataset to evaluate the model on.
+        precision (int): The number of decimal places to round the evaluation metrics.
+
+    Returns
+    -------
+        tuple: The rounded loss, accuracy, and f1 score.
     """
 
     test_loss, test_accuracy, test_f1 = model.evaluate(test_dataset)
@@ -104,8 +139,17 @@ def multiple_save_model(model: Sequential, model_name: str, path: str):
     best performant model that is saved as a callback using the .pb format.
 
     Alternative file formats are helpful when hosting for inference
-    """
 
+    Parameters
+    ----------
+        model (tf.keras.Sequential): The Keras model object.
+        model_name (str): The name of the model to be saved.
+        path (str): The directory path where the model files will be saved.
+
+    Returns
+    -------
+        None
+    """
     # create new directory for model files
 
     saved_models_dir = os.path.join(path, f"{model_name} h5 Files")
@@ -120,14 +164,26 @@ def save_performance_artifacts(
 ) -> None:
 
     """
-    Saves confusion matrix and loss curve to a artifacts directory
+    Save performance artifacts of the model, including confusion matrix and
+    loss curve.
 
-    Artifacts folder is renamed from model_name to include evaluation metrics ccon
+    Artifacts folder is renamed from model_name to include evaluation metrics
     leading with test accuracy to promote easy sorting.
 
-    From: model_name to {test_accuracy}_{model_name}_{test_loss}_{test_f1}
-    """
+    Directory renamed from model_name to
+    {test_accuracy}_{model_name}_{test_loss}_{test_f1}
 
+    Parameters
+    ----------
+        model (tf.keras.Sequential): The Keras model object.
+        model_name (str): The name of the model.
+        hist (dict): The history object returned by the model.fit() method.
+        test_dataset (tf.constant): The test dataset used to evaluate the model.
+
+    Returns
+    -------
+        None
+    """
     test_loss, test_accuracy, test_f1 = rounded_evaluate_metrics(model, test_dataset, 3)
 
     artifacts_dir_old = os.path.join(file_directory("artifact"), model_name)

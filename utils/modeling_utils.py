@@ -111,7 +111,7 @@ class ModelTraining:
 
         Returns
         --------
-            list: A list of dictionaries containing the permuted model 
+            list: A list of dictionaries containing the permuted model
             parameters.
         """
 
@@ -139,16 +139,16 @@ class ModelTraining:
     ) -> Sequential:
         """
         Creates convolution layer using a single set of params.
-    
+
         Parameters
         ----------
             model (tf.keras.Sequential): The Keras model object.
             params (dict): The dictionary containing the model parameters.
             filters (int): The number of filters in the convolution layer.
             kernel_size (int): The size of the kernel in the convolution layer.
-            first_layer_bool (bool): A flag indicating whether this is the 
+            first_layer_bool (bool): A flag indicating whether this is the
             first layer in the model.
-            
+
         Returns
         -------
             tf.keras.Sequential: The updated Keras model object.
@@ -194,7 +194,7 @@ class ModelTraining:
         ----------
             model (tf.keras.Sequential): The Keras model object.
             params (dict): The dictionary containing the model parameters.
-            
+
         Returns
         -------
             tf.keras.Sequential: The updated Keras model object.
@@ -223,7 +223,7 @@ class ModelTraining:
         ----------
             params (dict): Dictionary containing the model parameters.
             model_name (str): The name of the model.
-        
+
         Returns
         -------
             tf.keras.Sequential: The updated Tensorflow Keras model object.
@@ -284,14 +284,14 @@ class ModelTraining:
         model_name: str,
     ) -> tuple():
         """
-        Trains the model using specified parameters. Saves best model 
+        Trains the model using specified parameters. Saves best model
         performance as .pb in a new folder in the artifacts directory.
-        
+
         Parameters
         ----------
             params (dict): Dictionary containing the model parameters.
             model_name (str): The name of the model.
-        
+
         Returns
         -------
             tuple: A tuple of the history object and dictionary of performance results.
@@ -357,20 +357,20 @@ class ModelTraining:
 
     def train_all_models(self, experiment_name, permuted_model_params):
         """
-        Loops through all permuted_model_params and trains a model for each 
+        Loops through all permuted_model_params and trains a model for each
         params dict.
 
         Parameters
         ----------
             experiment_name (str): The name of the set of experiments
-            permuted_model_params (list): A list of dictionaries, each 
+            permuted_model_params (list): A list of dictionaries, each
             representing a set of model parameters to train.
-            
+
         Returns
         -------
             pandas.DataFrame: A dataframe containing performance metrics for
             all models in training run. Each row represents a single model's
-            information, including model parameters, evaluation metrics, and 
+            information, including model parameters, evaluation metrics, and
             training information.
 
 

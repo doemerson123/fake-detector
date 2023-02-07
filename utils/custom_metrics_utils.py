@@ -18,7 +18,29 @@ class StatefullMultiClassFBeta(Metric):
         epsilon=1e-7,
         **kwargs
     ):
+        """
+        Custom Keras Fbeta metric used to calculate Fbeta during modeling.
 
+        Parameters
+        ----------
+            name (str, optional): The name of the metric. Defaults to
+            "state_full_binary_fbeta".
+            beta (int, optional): The beta value used in Fbeta formula.
+            Defaults to 1.
+            n_class (int, optional): The number of classes in the data.
+            Defaults to 2.
+            average (str, optional): The type of average to use in Fbeta
+            calculation. Can be either "macro", "weighted", or "raw".
+            Defaults to "macro".
+            epsilon (float, optional): The small value used to avoid division
+            by zero. Defaults to 1e-7.
+            kwargs: Additional keyword arguments.
+
+        Returns
+        -------
+            tf.reduce_mean or tf.reduce_sum: The average or weighted average of
+            Fbeta score depending on the `average` parameter.
+        """
         # initializing an object of the super class
         super(StatefullMultiClassFBeta, self).__init__(name=name, **kwargs)
 
@@ -42,11 +64,22 @@ class StatefullMultiClassFBeta(Metric):
         self.average = average
         self.epsilon = epsilon
 
-    def update_state(self, ytrue, ypred, sample_weight=None):
+    def update_state(
+        self, ytrue: tf.Tensor, ypred: tf.Tensor, sample_weight: tf.Tensor = None
+    ) -> None:
         """
-        Updates states during training
-        """
+        Updates the state variables during training.
 
+        Parameters
+        ----------
+            ytrue (tf.Tensor): The ground truth labels.
+            ypred (tf.Tensor): The predicted labels.
+            sample_weight (tf.Tensor, optional): The weight of each sample. Defaults to None.
+
+        Returns
+        -------
+            None
+        """
         # casting ytrue and ypred as float dtype
         ytrue = tf.cast(ytrue, tf.float32)
         ypred = tf.cast(ypred, tf.float32)
@@ -70,8 +103,12 @@ class StatefullMultiClassFBeta(Metric):
     def result(self):
         """
         Calculates and returns F beta score
-        """
 
+        Returns
+        -------
+            tf.reduce_mean or tf.reduce_sum: The average or weighted average of
+            Fbeta score depending on the `average` parameter.
+        """
         self.precision = self.tp / (self.predicted_positives + self.epsilon)
         self.recall = self.tp / (self.actual_positives + self.epsilon)
 
@@ -96,8 +133,11 @@ class StatefullMultiClassFBeta(Metric):
     def reset_states(self):
         """
         Resets all states
-        """
 
+        Returns
+        -------
+            None
+        """
         self.tp.assign(tf.zeros(self.n_class))
         self.predicted_positives.assign(tf.zeros(self.n_class))
         self.actual_positives.assign(tf.zeros(self.n_class))
