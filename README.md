@@ -69,17 +69,10 @@ Most logic resides in the utils files. The deepfake scraper and testing folders 
 
 
 ## Is this thing on????
-Since all configuration for the app occurs in params.yaml, entry points do not have a CLI. Executing either of the two .py files/modules in the terminal will trigger the logic: `python model_training.py` or `python data_collection.py` 
+Since all configuration for the app occurs in params.yaml, entry points do not have a CLI. Executing either of the two .py files/modules in the terminal will trigger the logic: `python model_training.py` or `python deepfake_scraper\data_collection.py` using the appropriate slash for your system
 
 Test strategy is implemented using pytest. All code and supporting files reside in the test folder. Calling pytest in your favorite way will bring it to life.
 
-
-
-## How to kickoff training
-Edit params.yaml to desired parameter set, then run ```python model_training.py``` in the root of the repo
-
-## How to kickoff webscraping
-Edit params.yaml to desired parameter set, then run ```python deepfake\data_collection.py``` in the root of the repo using the appropriate slash for your system
 
 high level overview of scraper and how it works (to come)
 
